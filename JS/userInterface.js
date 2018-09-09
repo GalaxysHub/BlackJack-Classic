@@ -111,6 +111,8 @@ function displayBetChips(){
   anictx.textAlign = 'center';
   anictx.textBaseline = 'hanging';
 
+  anictx.clearRect(0,0,cWidth/2,cHeight);//simplfy
+
   for(let h = 0, numHands=pHandsArr.length; h<numHands; h++){
     let chipXLoc = pHandXLocs[h]-cardWidth,
     chipYLoc = pHandYLocs[0]-cardHeight,
@@ -153,17 +155,18 @@ const pointer = {
 
 function displayValue(){
   let fontSize = Math.floor(cHeight/20);
-  anictx.font = fontSize+'px Arial';
-  anictx.textAlign = 'center';
-  anictx.textBaseline = 'middle';
+  disctx.font = fontSize+'px Arial';
+  disctx.textAlign = 'center';
+  disctx.textBaseline = 'middle';
+  disctx.fillStyle  = 'white';
 
   let pXPos = pHandXLocs[curHand],
-    pYPos = Math.floor(cHeight*0.65),
-    dYPos = Math.floor(cardHeight*1.6);
-  anictx.clearRect(cWidth/2-fontSize, dYPos-fontSize, 2*fontSize, 1.5*fontSize);
-  anictx.fillText(dHand.value,cWidth/2,cardHeight*1.6);
-  anictx.clearRect(pXPos-fontSize,pYPos-fontSize,2*fontSize,1.5*fontSize);
-  anictx.fillText(pHand.value,pXPos,pYPos);
+    pYPos = Math.floor(cHeight*0.97),
+    dYPos = Math.floor(cHeight*0.03);
+  disctx.clearRect(cWidth/2-fontSize, dYPos-fontSize, 2*fontSize, 1.5*fontSize);
+  disctx.fillText(dHand.value,cWidth/2,dYPos);
+  disctx.clearRect(pXPos-fontSize,pYPos-fontSize,2*fontSize,1.5*fontSize);
+  disctx.fillText(pHand.value,pXPos,pYPos);
 }
 
 function displayPointer(){
@@ -287,8 +290,8 @@ btnCanvas.addEventListener('click', function(evt){
       drawButtons();
     }
     displayCards();
-    displayValue();
     displayPointer();
+    displayValue();
   }else{
     if(isInside(mousePos,optionButtonsMap.get('Play'))&&account.bet>=minBet){
       console.log('PlayGame');
@@ -305,8 +308,8 @@ btnCanvas.addEventListener('click', function(evt){
       //Changes bet based on chips selected
       chipBtnMap.forEach(chip=>{
         if(isInside(mousePos,chip)){
-          anictx.clearRect(0,0,cWidth/2,cHeight);
           account.bet+=chip.v;
+          drawPlayBetBtns();
         }
       })
     }else if(rebet==true){
@@ -315,8 +318,11 @@ btnCanvas.addEventListener('click', function(evt){
         account.bet=0;
         console.log('bet cleared');
         drawPlayBetBtns();
+        displayBetChips();
       }
     }
+
+    anictx.clearRect(0,0,cWidth,cHeight);//simplfy
     displayBetChips();
   }
 

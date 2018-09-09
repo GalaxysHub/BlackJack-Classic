@@ -5,6 +5,7 @@ let curHand;
 let hasSplit = false;
 
 let lastBet;
+let surrendered = false;
 let rebet = true;
 let playingGame = true;
 
@@ -18,6 +19,7 @@ function Hand(cards=[], val=0, nAces=0){
 let pHand, dHand;
 
 function newGame(){
+  surrendered = false;
   account.balance-=account.bet;
   rebet = true;
   pHandsArr = [];
@@ -114,8 +116,7 @@ function doubleDown(){
 }
 
 function surrender(){
-  console.log('surrender');
-  account.balance-=account.bet/2;
+  surrendered = true;
   stand();
 }
 
@@ -181,7 +182,8 @@ function findWinner(){
   pHandsArr.map(hand=>{
     let pValue = hand.value,
       dValue = dHand.value;
-    if(pValue>21){console.log('Player busts')}
+    if(surrendered){console.log(surrendered); account.balance+=0.5*hand.bet}
+    else if(pValue>21){console.log('Player busts')}
     else if(pValue>dValue&&pValue<22){console.log('player wins'); account.balance+=2*hand.bet}
     else if(pValue<22&&dValue>21){
       console.log('Dealer busts. Player wins'); account.balance+=2*hand.bet

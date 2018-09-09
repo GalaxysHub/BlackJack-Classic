@@ -61,7 +61,7 @@ for(let i = 1; i<splitUpTo; i++){
   //adds all of the cards for a single deck of cards
   const deckCards = [];
   cardSuits.forEach((suit)=>{
-    for(let i = 10; i<=13; i++){
+    for(let i = 9; i<=13; i++){
       deckCards.push(i+suit);
     }
     faceCards.forEach(c=>{
@@ -111,10 +111,3 @@ for(let i = 1; i<splitUpTo; i++){
   //
   // }
 // })()
-
-for(let i = 0; i<pHandXLocs.length; i++){
-  ctx.fillStyle = 'white';
-  let cardWidth = 50;
-  let cardHeight = 50;
-  ctx.fillRect(pHandXLocs[i]-cardWidth/2,cHeight*0.75,cardWidth,50);
-}
