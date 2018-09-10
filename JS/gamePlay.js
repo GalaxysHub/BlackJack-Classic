@@ -2,9 +2,8 @@
 
 let pHandsArr = [];
 let curHand;
-let hasSplit = false;
-
 let lastBet;
+let hasSplit = false;
 let surrendered = false;
 let rebet = true;
 let playingGame = true;
@@ -36,6 +35,7 @@ function newGame(){
     hit(dHand);
   }
   pHandsArr[0]=pHand;
+  createpHandsXLocs();
   checkBlackJack(pHand);
   displayCards();
   displayValue();
@@ -60,8 +60,8 @@ function displayCards(){
     yDif = Math.floor(cardHeight/7);
 
   for(let i = 0; i<pHandsArr.length; i++){
-    let pCards = pHandsArr[i].cards;
-    let xLocStartP = pHandXLocs[i]-cardWidth/2,
+    let pCards = pHandsArr[i].cards,
+      xLocStartP = pHandXLocs[i]-cardWidth/2,
       yLocStartP = cHeight*0.95-cardHeight;
 
     function drawPHand(){
@@ -75,8 +75,8 @@ function displayCards(){
   }
 
   function drawDHand(){
-    let xLocStart = cWidth/2-cardWidth/2;
-    let yLocStart = cHeight*0.05
+    let xLocStart = cWidth/2-cardWidth/2,
+      yLocStart = cHeight*0.05
 
     for(let j = 0; j<dHand.cards.length; j++){
       let xLoc = xLocStart - xDif*j;
@@ -96,10 +96,23 @@ function split(){
     hit(pHandsArr[curHand])//draws on first hand
     hit(splitHand);//draws on second hand
     pHandsArr.push(splitHand);
+    createpHandsXLocs();
+    ctx.clearRect(0,0,cWidth,cHeight);
+    anictx.clearRect(0,0,cWidth,cHeight);
     displayCards();
     displayBalance();
   }else{console.log("can't split")}
 }
+
+function createpHandsXLocs(){
+  let numHands = pHandsArr.length;
+  let xDis = cWidth/(numHands+1);
+  pHandXLocs.splice(0,pHandXLocs.length);
+  for(let i = 1, j=numHands+1; i<j; i++){
+    pHandXLocs.push(Math.floor(xDis*i));
+  }
+}
+
 
 function hit(hand){
   hand.cards.push(draw());

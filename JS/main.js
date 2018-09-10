@@ -30,22 +30,22 @@ const minBet = 100,
   maxBet = 1000;
 
 const splitUpTo = 5;
+
 const pHandXDif = Math.floor(cWidth/(splitUpTo+1)),
   pHandYDif = Math.floor(cHeight/20);
 
 const cardWidth = Math.floor(cWidth/10),
   cardHeight = Math.floor(cardWidth*1.5);
 
-
 let shoe = [];
 
 const pHandXLocs = [cWidth/2],
   pHandYLocs = [cHeight*0.8] //used for splitting
 
-for(let i = 1; i<splitUpTo; i++){
-  if(i%2==1){pHandXLocs.push(pHandXLocs[i-1]+i*pHandXDif)}
-  if(i%2==0){pHandXLocs.push(pHandXLocs[i-1]-i*pHandXDif)}
-}
+// for(let i = 1; i<splitUpTo; i++){
+//   if(i%2==1){pHandXLocs.push(pHandXLocs[i-1]+i*pHandXDif)}
+//   if(i%2==0){pHandXLocs.push(pHandXLocs[i-1]-i*pHandXDif)}
+// }
 
 // const setUp = (function(){
   const cardPicLoc = "./Images/Cards/";
