@@ -42,11 +42,6 @@ let shoe = [];
 const pHandXLocs = [cWidth/2],
   pHandYLocs = [cHeight*0.8] //used for splitting
 
-// for(let i = 1; i<splitUpTo; i++){
-//   if(i%2==1){pHandXLocs.push(pHandXLocs[i-1]+i*pHandXDif)}
-//   if(i%2==0){pHandXLocs.push(pHandXLocs[i-1]-i*pHandXDif)}
-// }
-
 // const setUp = (function(){
   const cardPicLoc = "./Images/Cards/";
   const picLoc = "./Images/Misc/";
@@ -61,7 +56,7 @@ const pHandXLocs = [cWidth/2],
   //adds all of the cards for a single deck of cards
   const deckCards = [];
   cardSuits.forEach((suit)=>{
-    for(let i = 9; i<=13; i++){
+    for(let i = 2; i<=13; i++){
       deckCards.push(i+suit);
     }
     faceCards.forEach(c=>{
