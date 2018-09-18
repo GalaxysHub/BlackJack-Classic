@@ -5,11 +5,12 @@ function bust(hand){
   console.log('bust');
   hand.bust = true;
   if(hand==pHand){
-    if(pHandsArr.length!==1){
-      gctx.font = Math.floor(cHeight/15)+"px TheBlacklist";
+    if(pHandsArr.length==1){
+      strokeAndFillText(gctx,'Bust',pHandXLocs[0],pHandYLocs+cardH/2);
+      console.log('drawing bust');
+    }else{
+      drawPHandsArr();
     }
-    strokeAndFillText(gctx,'Bust',pHandXLocs[curHand],pHandYLocs+cardH/2);
-    gctx.font = Math.floor(cHeight/6)+"px TheBlacklist";
   }else if(hand==dHand){
     strokeAndFillText(gctx,"Bust",cWidth/2,cHeight*0.1+cardH/2);
   }

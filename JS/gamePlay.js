@@ -31,6 +31,7 @@ function newGame(){
   dHand = new Hand();
   // lastBet = account.bet;
   ctx.clearRect(0,0,cWidth,cHeight);
+  anictx.clearRect(0,0,cWidth,cHeight);
   bctx.clearRect(0,0,cWidth,cHeight);//clears chip stacks. animations should render obselete
   disctx.clearRect(0,0,cWidth,cHeight);
   gctx.clearRect(0,0,cWidth,cHeight);
@@ -45,17 +46,17 @@ function newGame(){
   playingGame = true;
   pHandsArr[0]=pHand;
 
-  let exposedCardVal = dHand.cards[1][0];
-  if(exposedCardVal =='1'||exposedCardVal =='A'){
-    checkingCard = true;
-  }
+
   createpHandsXLocs();// simplify
   drawDHandStart();
   drawPHandsArr();
   displayPValue();
 
+  let exposedCardVal = dHand.cards[1][0];
   if(exposedCardVal=='A'){
-    insuranceOpt=true;
+    insuranceOpt = true;
+    checkingCard = true;
+    drawButtons();
   }else if(exposedCardVal=='1'){
     checkDealerBlackJack();
   }else{
@@ -72,18 +73,19 @@ function checkBlackJack(hand){
     if(numHands==1){
       playingGame=false;
       strokeAndFillText(gctx,'BlackJack',cWidth/2,cHeight-cardH*0.7);
-      drawPlayBetBtns();
     }else{
-      drawPHandsArr();//need to write BlackJack to hand can probably simplify;
-      // gctx.font = Math.floor(cHeight/(numHands*3.3))+"px TheBlacklist";
-      // strokeAndFillText(gctx,'BlackJack',pHandXLocs[curHand],yLocStartP+cardH/2);
-      // gctx.font = Math.floor(cHeight/6)+"px TheBlacklist";
+      drawPHandsArr();//need to write BlackJack to hand. Can't simplify well
     }
-    if(checkingCard===false){stand();}
-  }else{drawButtons();}
+    if(checkingCard===false){
+      stand();
+    }
+  }
+  drawButtons();
 }
 
 function checkDealerBlackJack(cb=()=>{}){
+  checkingCard = true;
+  drawButtons();
   let xLocStart = cWidth/2-cardW/2,
     yLocStart = cHeight*0.05,
     xFin = xLocStart+cardW/2,
@@ -106,19 +108,20 @@ function checkDealerBlackJack(cb=()=>{}){
           animations.slide(holeCard,xFin2,yLocStart,xLocStart,yLocStart,cardW,cardH,30,0,anictx,()=>{
             strokeAndFillText(gctx,'BlackJack!',cWidth/2,yLocStart+cardH/2,cWidth);
             //Welcome to Callback Hell. It's not so bad here
-            checkingCard = false;
             playingGame = false;
+            checkingCard = false;
             drawButtons();
             cb();
+            // if(pHand.value==21){push(pHand);}
+            // else{dealerWins();}
           });//end slide2
         })//end flip
       });//end slide1
     }else{
       animations.slide(cardBack,xFin,yLocStart,xLocStart,yLocStart,cardW,cardH,20,20,ctx,()=>{
         ctx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);
-        checkingCard = false;//probably have to move to cb location
+        checkingCard = false;
         drawButtons();
-        cb();
       })
     }
   });
@@ -131,23 +134,20 @@ function resolveInsurance(){
   insuranceOpt = false;
   gctx.clearRect(0,cHeight*0.3,cWidth,cHeight*0.4);//Clears Insurance? display
 
-  checkDealerBlackJack(cb());
 
+  checkDealerBlackJack(cb());
   function cb(){
     if(dHand.value==21){
-      playingGame = false;
       if(insured==true){
         //animation here
         account.balance+=account.bet;
+        drawButtons();
         displayBalance();
       }
-      else if(insured==false){
-        if(pHand.value==21){push(pHand);}
-        else{dealerWins();}
+      if(pHand.value==21){push(pHand);}
+      else{dealerWins();}
       }
-      drawButtons();
     }
-  }
 
 }
 
@@ -228,7 +228,9 @@ function calcHandValue(hand){
     hand.numAces-=1;
   }
   hand.value = sum;
-  if(sum>21){bust(hand);}
+  if(sum>21){
+    bust(hand);
+  }
   else if(hand.double){stand()}
 }
 

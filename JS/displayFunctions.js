@@ -124,25 +124,32 @@ function drawPHand(pHand,xLocStartP){
 }
 
 function drawPHandsArr(){//Draws each of the players hands
-  gctx.clearRect(0,cHeight/2,cWidth,cHeight/2); //in case of previous blackjack
+  let len = pHandsArr.length;
+
+  if(len==1){
+    drawPHand(pHand,pHandXLocs[0]-cardW/2);
   //draws each of players hands
-  for(let i = 0, j=pHandsArr.length; i<j; i++){
-    let pHand = pHandsArr[i],
-      xLocStartP = pHandXLocs[i]-cardW/2;
+  }else{//true if player has split
+    gctx.clearRect(0,cHeight/2,cWidth,cHeight/2); //in case of previous blackjack
+    gctx.font = Math.floor(cHeight/15)+"px TheBlacklist";
 
-    drawPHand(pHand,xLocStartP);
+    for(let i = 0; i<len; i++){
+      let pHand = pHandsArr[i],
+        xLocStartP = pHandXLocs[i]-cardW/2;
 
-    if(j>1){//true if player has split
-      gctx.font = Math.floor(cHeight/15)+"px TheBlacklist";
-      if(pHand.blackJack==true){
+      drawPHand(pHand,xLocStartP);
+
+      if(pHand.bust==true){
+        strokeAndFillText(gctx,'Bust',pHandXLocs[i],pHandYLocs+cardH/2);
+      }else if(pHand.blackJack==true){
         console.log('writing blackjack');
         strokeAndFillText(gctx,'BlackJack',pHandXLocs[i],pHandYLocs+cardH/2);
-      }else if(pHand.value>21){
-        strokeAndFillText(gctx,'Bust',pHandXLocs[i],pHandYLocs+cardH/2);
       }
     }
+    gctx.font = Math.floor(cHeight/6)+"px TheBlacklist";
+
   }
-  gctx.font = Math.floor(cHeight/6)+"px TheBlacklist";
+
 }
 
 //buttons canvas functions
@@ -211,7 +218,6 @@ function drawButtons(){
   BTNctx.clearRect(cWidth/2-btnSize*2,0,btnSize*5,btncHeight);//clears previously drawn btns
   let fontSize = btncHeight/5;
   BTNctx.font = fontSize+'px Chela';
-
 
   if(insuranceOpt){
     gctx.strokeText('Insurance?',cWidth/2,cHeight/2,cWidth*0.9);

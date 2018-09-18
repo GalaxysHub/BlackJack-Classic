@@ -108,7 +108,7 @@ const pHandXLocs = [cWidth/2],//used for splitting
   //adds all of the cards for a single deck of cards
   const deckCards = [];
   cardSuits.forEach((suit)=>{
-    for(let i = 2; i<=13; i++){
+    for(let i = 10; i<=13; i++){
       deckCards.push(i+suit);
     }
     faceCards.forEach(c=>{
