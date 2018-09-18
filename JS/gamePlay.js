@@ -6,7 +6,11 @@ let lastBet;
 let hasSplit = false;
 let surrendered = false;
 let rebet = true;
+// let playersTurn = false;
 let playingGame = true;
+let insuranceOpt = false;
+let insured = false;
+let checkingCard = false;
 
 function Hand(cards=[], val=0, nAces=0){
   this.cards = cards;
@@ -16,8 +20,9 @@ function Hand(cards=[], val=0, nAces=0){
 }
 
 let pHand, dHand;
-
 function newGame(){
+  // playersTurn = true
+  if(shoe.length<cutCard){createShoe();}
   surrendered = false;
   account.balance-=account.bet;
   rebet = true;
@@ -28,78 +33,140 @@ function newGame(){
   ctx.clearRect(0,0,cWidth,cHeight);
   anictx.clearRect(0,0,cWidth,cHeight);
   disctx.clearRect(0,0,cWidth,cHeight);
+  gctx.clearRect(0,0,cWidth,cHeight);
+
   curHand = 0;
   hasSplit = false;
   for(let i = 0; i<2; i++){
+    //Add animations here
     hit(pHand);
     hit(dHand);
   }
+  playingGame = true;
   pHandsArr[0]=pHand;
-  createpHandsXLocs();
-  checkBlackJack(pHand);
-  displayCards();
-  displayValue();
+
+  let exposedCardVal = dHand.cards[1][0];
+  if(exposedCardVal =='1'||exposedCardVal =='A'){
+    checkingCard = true;
+  }
+  createpHandsXLocs();// simplify
+  drawDHandStart();
+  drawPHandsArr();
+  displayPValue();
+
+  if(exposedCardVal=='A'){
+    insuranceOpt=true;
+  }else if(exposedCardVal=='1'){
+    checkDealerBlackJack();
+  }else{
+    playingGame = true;
+  }
+  checkBlackJack(pHand)
 }
 
 function checkBlackJack(hand){
   if(hand.value===21&&hand.cards.length==2){
-    let fontSize = cHeight/20;
+    hand.blackJack = true;
     console.log('BlackJack');
-    anictx.textAlign = 'center';
-    anictx.font = fontSize+"px Arial";
-    anictx.fillText('BlackJack',pHandXLocs[curHand],cHeight/2);
-    //Check for push
-    account.balance+=account.bet*2.5
-    playingGame = false;
-    rebet = true;
-  }
+    let numHands = pHandsArr.length
+    if(numHands==1){
+      playingGame=false;
+      strokeAndFillText(gctx,'BlackJack',cWidth/2,cHeight-cardH*0.7);
+      drawPlayBetBtns();
+    }else{
+      drawPHandsArr();//need to write BlackJack to hand can probably simplify;
+      // gctx.font = Math.floor(cHeight/(numHands*3.3))+"px TheBlacklist";
+      // strokeAndFillText(gctx,'BlackJack',pHandXLocs[curHand],yLocStartP+cardH/2);
+      // gctx.font = Math.floor(cHeight/6)+"px TheBlacklist";
+    }
+    if(checkingCard===false){stand();}
+  }else{drawButtons();}
 }
 
-function displayCards(){
-  let xDif = Math.floor(cardWidth/7),
-    yDif = Math.floor(cardHeight/7);
+function checkDealerBlackJack(cb=()=>{}){
+  let xLocStart = cWidth/2-cardW/2,
+    yLocStart = cHeight*0.05,
+    xFin = xLocStart+cardW/2,
+    xFin2 = xLocStart+cardW;
+  //Animation
+  let cardBack = miscImgMap.get('WhiteRabbitBack');
+  let holeCard = cardImgMap.get(dHand.cards[0])
+  let exposedCard = cardImgMap.get(dHand.cards[1]);
 
-  for(let i = 0; i<pHandsArr.length; i++){
-    let pCards = pHandsArr[i].cards,
-      xLocStartP = pHandXLocs[i]-cardWidth/2,
-      yLocStartP = cHeight*0.95-cardHeight;
+  anictx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);// have to redraw image because of animation edge cases
+  animations.slide(cardBack,xLocStart,yLocStart,xFin,yLocStart,cardW,cardH,20,0,ctx,()=>{
+    if(dHand.value==21){
+      let n = 15
+      let inc = (2*cardW)/n;
+      animations.slide(cardBack,xFin,yLocStart,xFin2,yLocStart,cardW,cardH,10,20,ctx,()=>{
+        animations.flip(cardBack,holeCard,xFin2+cardW/2,yLocStart,cardW,cardH,n,20,inc,ctx,()=>{
+          ctx.clearRect(xFin2,yLocStart,cardW,cardH);//clears last flipped image
+          // anictx.clearRect(xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);// have to redraw image because of ani
+          ctx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);// have to redraw image because of animation edge cases
+          animations.slide(holeCard,xFin2,yLocStart,xLocStart,yLocStart,cardW,cardH,30,0,anictx,()=>{
+            strokeAndFillText(gctx,'BlackJack!',cWidth/2,yLocStart+cardH/2,cWidth);
+            //Welcome to Callback Hell. It's not so bad here
+            checkingCard = false;
+            playingGame = false;
+            drawButtons();
+            cb();
+          });//end slide2
+        })//end flip
+      });//end slide1
+    }else{
+      animations.slide(cardBack,xFin,yLocStart,xLocStart,yLocStart,cardW,cardH,20,20,ctx,()=>{
+        ctx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);
+        checkingCard = false;//probably have to move to cb location
+        drawButtons();
+        cb();
+      })
+    }
+  });
 
-    function drawPHand(){
-      for(let j = 0; j<pCards.length; j++){
-        let xLoc = xLocStartP + xDif*j;
-        let yLoc = yLocStartP - yDif*j;
-        ctx.drawImage(cardImgMap.get(pCards[j]), xLoc, yLoc,cardWidth, cardHeight);
+}
+
+function resolveInsurance(){
+  //dealer peak animation
+  console.log('resolving insurance');
+  insuranceOpt = false;
+  gctx.clearRect(0,cHeight*0.3,cWidth,cHeight*0.4);//Clears Insurance? display
+
+  checkDealerBlackJack(cb());
+
+  function cb(){
+    if(dHand.value==21){
+      playingGame = false;
+      if(insured==true){
+        //animation here
+        account.balance+=account.bet;
+        displayBalance();
       }
-    }
-    drawPHand();
-  }
-
-  function drawDHand(){
-    let xLocStart = cWidth/2-cardWidth/2,
-      yLocStart = cHeight*0.05
-
-    for(let j = 0; j<dHand.cards.length; j++){
-      let xLoc = xLocStart - xDif*j;
-      let yLoc = yLocStart + yDif*j;
-      ctx.drawImage(cardImgMap.get(dHand.cards[j]), xLoc, yLoc,cardWidth, cardHeight);
+      else if(insured==false){
+        if(pHand.value==21){push(pHand);}
+        else{dealerWins();}
+      }
+      drawButtons();
     }
   }
-  drawDHand();
+
 }
 
 function split(){
   let newBalance = account.balance-account.bet;
   if(pHandsArr.length<splitUpTo&&newBalance>=0){
+    let currentHand = pHandsArr[curHand];
     hasSplit = true;
     account.balance = newBalance;
-    let splitHand = new Hand(pHandsArr[curHand].cards.splice(1,1));//splits hand
-    hit(pHandsArr[curHand])//draws on first hand
+    let splitHand = new Hand(currentHand.cards.splice(1,1));//splits hand
+    hit(currentHand)//draws on first hand
     hit(splitHand);//draws on second hand
     pHandsArr.push(splitHand);
     createpHandsXLocs();
-    ctx.clearRect(0,0,cWidth,cHeight);
-    anictx.clearRect(0,0,cWidth,cHeight);
-    displayCards();
+    ctx.clearRect(0,cHeight/2,cWidth,cHeight/2);//clear card images
+    anictx.clearRect(0,0,cWidth,cHeight);//clears chips stacks
+    checkBlackJack(currentHand);
+    drawPHandsArr();
+    displayBetChips();
     displayBalance();
   }else{console.log("can't split")}
 }
@@ -113,7 +180,6 @@ function createpHandsXLocs(){
   }
 }
 
-
 function hit(hand){
   hand.cards.push(draw());
   calcHandValue(hand);
@@ -123,29 +189,26 @@ function doubleDown(){
   console.log('double down');
   account.balance-=account.bet;
   pHand.bet = 2*account.bet;
-  displayBalance();
+  pHand.double = true;
   hit(pHand);
-  stand();
-}
-
-function surrender(){
-  surrendered = true;
-  stand();
-}
-
-function insurance(){
-
+  displayBalance();
+  displayBetChips();
 }
 
 function stand(){
-  pHandsArr[curHand] = pHand;
+  //Loops through player's hands if split
   let nextHand = curHand+1;
   if(hasSplit&&(nextHand)<pHandsArr.length){
     curHand = nextHand;
     pHand = pHandsArr[curHand];
     checkBlackJack(pHand);
     drawButtons();
-  }else{dealerAction()}
+  }else{
+    // playersTurn=false;
+    if(checkingCard==false){
+      dealerAction();
+    }
+  }
 }
 
 function calcHandValue(hand){
@@ -166,43 +229,43 @@ function calcHandValue(hand){
   }
   hand.value = sum;
   if(sum>21){bust(hand);}
-}
-
-function bust(hand){
-  console.log('bust');
-  let fontSize = cHeight/12;
-  anictx.font = fontSize+"px Arial";
-  anictx.textAlign = 'center';
-  anictx.textBaseline = 'middle';
-  if(hand==pHand){
-    anictx.fillText('Bust',pHandXLocs[curHand],cHeight-cardHeight);
-  }
-  stand();
+  else if(hand.double){stand()}
 }
 
 function dealerAction(){
   //dealer hits on anything less than 17 and soft 17
+  drawDHand();
   while(dHand.value<17||(dHand.value==17&&dHand.numAces>0)){
     hit(dHand);
+    drawDHand();
   }
   console.log('dealer action');
-  findWinner();
+
   playingGame=false;
-  drawPlayBetBtns();
+  findWinner();
 }
 
 function findWinner(){
   pHandsArr.map(hand=>{
     let pValue = hand.value,
       dValue = dHand.value;
-    if(surrendered){console.log(surrendered); account.balance+=0.5*hand.bet}
-    else if(pValue>21){console.log('Player busts')}
-    else if(pValue>dValue&&pValue<22){console.log('player wins'); account.balance+=2*hand.bet}
-    else if(pValue<22&&dValue>21){
-      console.log('Dealer busts. Player wins'); account.balance+=2*hand.bet
-    }
-    else if(pValue===dValue){console.log('push'); account.balance+=hand.bet}
-    else{console.log('dealer wins');}
+
+    if(hand.surrendered){
+      console.log(surrendered);
+    }else if(hand.blackJack){
+      playerBJ(hand);
+    }else if(pValue>21){
+      console.log('Player busts')
+    }else if(pValue>dValue&&pValue<22){
+      console.log('player wins');
+      playerWins(hand);
+    }else if(pValue<22&&dValue>21){
+      console.log('Dealer busts. Player wins');
+      playerWins(hand);
+    }else if(pValue===dValue){
+      console.log('push');
+      push(hand);
+    }else{console.log('dealer wins');dealerWins();}
   })
   drawPlayBetBtns();
 }
