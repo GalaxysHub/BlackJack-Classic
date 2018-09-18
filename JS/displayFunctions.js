@@ -71,15 +71,15 @@ const promiseButtonsImgArr = asyncHelperFunctions.createPromImgArr(btnsPics, but
   promisechipBtnImgArr = asyncHelperFunctions.createPromImgArr(chipBtnsPics, chipBtnImgMap, chipsTopLoc);
 
 Promise.all(promiseButtonsImgArr.concat(promiseChipSideViewImgArr).concat(promisechipBtnImgArr))
-  .then((document.fonts.load("12 px TheBlacklist")))
-  .then((document.fonts.load('12 px Chela')))
+  .then(document.fonts.load("12px TheBlacklist"))
+  .then(document.fonts.load('12px Chela'))
   .then(()=>{
-  BGBTNctx.drawImage(buttonsImgMap.get('ButtonBackground'),0,0,cWidth,btncHeight);//draws Background
-  drawChipButtons();
-  drawButtons();
-  displayBalance();
-  setBtnCtxProps();
-});
+    BGBTNctx.drawImage(buttonsImgMap.get('ButtonBackground'),0,0,cWidth,btncHeight);//draws Background
+    setBtnCtxProps();
+    drawChipButtons();
+    drawButtons();
+    displayBalance();
+  });
 
 function strokeAndFillText(ctx,msg,x,y,maxW){
   ctx.strokeText(msg,x,y,maxW);

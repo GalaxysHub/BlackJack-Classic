@@ -124,8 +124,8 @@ const pHandXLocs = [cWidth/2],//used for splitting
 
 
   Promise.all(promiseCardImgArr.concat(promiseMiscPicArr))
-  .then((document.fonts.load("12 px TheBlacklist")))
-  .then((document.fonts.load('12 px Chela')))
+  .then((document.fonts.load("12px TheBlacklist")))
+  .then((document.fonts.load('12px Chela')))
   .then(()=>{
     setCtxProps();
     drawBG();

@@ -31,7 +31,7 @@ function newGame(){
   dHand = new Hand();
   // lastBet = account.bet;
   ctx.clearRect(0,0,cWidth,cHeight);
-  anictx.clearRect(0,0,cWidth,cHeight);
+  bctx.clearRect(0,0,cWidth,cHeight);//clears chip stacks. animations should render obselete
   disctx.clearRect(0,0,cWidth,cHeight);
   gctx.clearRect(0,0,cWidth,cHeight);
 
@@ -163,7 +163,7 @@ function split(){
     pHandsArr.push(splitHand);
     createpHandsXLocs();
     ctx.clearRect(0,cHeight/2,cWidth,cHeight/2);//clear card images
-    anictx.clearRect(0,0,cWidth,cHeight);//clears chips stacks
+    bctx.clearRect(0,0,cWidth,cHeight);//clears chips stacks
     checkBlackJack(currentHand);
     drawPHandsArr();
     displayBetChips();
