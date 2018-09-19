@@ -69,7 +69,6 @@ function setCtxProps(){
   disctx.fillStyle  = 'white';
   disctx.font = stdFontSize+'px Chela';
 }
-// setCtxProps();
 
 const account = {
   balance: 10000,
@@ -88,7 +87,6 @@ const pHandXDif = Math.floor(cWidth/(splitUpTo+1)),
 
 const cardW = Math.floor(cWidth/10),
   cardH = Math.floor(cardW*1.5);
-
 
 
 const pHandXLocs = [cWidth/2],//used for splitting

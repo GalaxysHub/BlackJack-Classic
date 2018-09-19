@@ -96,11 +96,8 @@ function drawDHandStart(){
   const dHandxLocStart = cWidth/2-cardW/2,
     dHandyLocStart = cHeight*0.05;
   let exposedCard = dHand.cards[1];
-  let cvs;
-    ctx.drawImage(miscImgMap.get('WhiteRabbitBack'),dHandxLocStart,dHandyLocStart,cardW,cardH);
-    // if(checkingCard===true){ctx = anictx;
-    // }else{ctx = ctx;}
-    ctx.drawImage(cardImgMap.get(exposedCard),dHandxLocStart-xCardDif,dHandyLocStart+yCardDif,cardW,cardH);
+  ctx.drawImage(miscImgMap.get('WhiteRabbitBack'),dHandxLocStart,dHandyLocStart,cardW,cardH);
+  ctx.drawImage(cardImgMap.get(exposedCard),dHandxLocStart-xCardDif,dHandyLocStart+yCardDif,cardW,cardH);
 }
 
 function drawDHand(){
@@ -220,8 +217,8 @@ function drawButtons(){
   BTNctx.font = fontSize+'px Chela';
 
   if(insuranceOpt){
-    gctx.strokeText('Insurance?',cWidth/2,cHeight/2,cWidth*0.9);
-    gctx.fillText('Insurance?',cWidth/2,cHeight/2,cWidth*0.9);
+    gctx.strokeText('Insurance?',cWidth/2,cHeight/4,cWidth*0.9);
+    gctx.fillText('Insurance?',cWidth/2,cHeight/4,cWidth*0.9);
     drawBtnImg('Yes'); drawBtnImg('No');
     writeBtnMsg('Yes'); writeBtnMsg('No');
   }else if(checkingCard){
@@ -303,6 +300,16 @@ function displayPointer(){
   p.x = pHandXLocs[curHand]-p.w/2;
   disctx.clearRect(0,p.y,cWidth,p.h);
   disctx.drawImage(miscImgMap.get('DownArrowPointer'),p.x,p.y,p.w,p.h);
+}
+
+function checkBalance(amt){
+  gctx.clearRect(0,cHeight*0.3,cWidth,cHeight*0.4);
+  let newBal = account.balance-amt;
+  if(newBal<0){
+    strokeAndFillText(gctx,"Insufficient Balance",cWidth/2,cHeight/2,cWidth);
+  }else{
+    return true;
+  }
 }
 
 const balFontSize = Math.floor(btncHeight/3);

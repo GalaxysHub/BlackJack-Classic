@@ -6,15 +6,15 @@ function bust(hand){
   hand.bust = true;
   if(hand==pHand){
     if(pHandsArr.length==1){
-      strokeAndFillText(gctx,'Bust',pHandXLocs[0],pHandYLocs+cardH/2);
+      strokeAndFillText(gctx,'Bust',cWidth/2,pHandYLocs+cardH/2);
       console.log('drawing bust');
     }else{
       drawPHandsArr();
     }
+    stand();
   }else if(hand==dHand){
     strokeAndFillText(gctx,"Bust",cWidth/2,cHeight*0.1+cardH/2);
   }
-  stand();
 }
 
 function surrender(hand){
@@ -23,16 +23,26 @@ function surrender(hand){
 }
 
 function playerBJ(hand){
+  //animation here
+  console.log('player blackjack')
   account.balance+=2.5*hand.bet;
+  displayBalance();
 }
 function playerWins(hand){
+  //animation here
+  console.log('player wins');
   account.balance+=2*hand.bet;
+  displayBalance();
 }
 
 function dealerWins(hand){
-
+  //animation here
+  console.log('dealer wins');
 }
 
 function push(hand){
+  //animation here
+  console.log('push');
   account.balance+=hand.bet;
+  displayBalance();
 }

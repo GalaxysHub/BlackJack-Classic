@@ -14,22 +14,21 @@ function isInside(pos, rect){
 
 btnCanvas.addEventListener('click', function(evt){
   let mousePos = getMousePos(btnCanvas,evt);
-
-  // if(checkingCard===false){//replace with canClick later
     if(insuranceOpt===true){
       if(isInside(mousePos,optionButtonsMap.get('Yes'))){
         console.log('yes clicked');
-        insured = true;
-        account.balance-=account.bet/2;
-        //animation here
-        resolveInsurance();
+        if(checkBalance(account.bet/2)){
+          //animation here
+          account.balance-=account.bet/2;
+          checkDealerBlackJack(resolveInsurance());
+        }
       }else if(isInside(mousePos,optionButtonsMap.get('No'))){
         console.log('no clicked');
-        insured = false;
-        resolveInsurance();
+        checkDealerBlackJack();
       }
       drawButtons();
     }else{
+      gctx.clearRect(0,cHeight*0.3,cWidth,cHeight*0.4);//in case insufficient balance is displayed
       if(checkingCard==false){
         if(playingGame===true){
           if(isInside(mousePos,optionButtonsMap.get('Hit'))){
@@ -38,20 +37,21 @@ btnCanvas.addEventListener('click', function(evt){
             drawButtons();
             console.log(pHand.value);
             let totHands = pHandsArr.length;
-            if(pHand.value==21){stand();}
-            if(pHand.value>20&&curHand==totHands){
-              drawPlayBetBtns();
-              dealerAction();
+            if(pHand.value>20){
+              stand();
             }
-          }else if(isInside(mousePos,optionButtonsMap.get('Stand'))){stand();
+          }else if(isInside(mousePos,optionButtonsMap.get('Stand'))){
+            stand();
           }else if(pHand.cards.length==2){
             if(isInside(mousePos,optionButtonsMap.get('Double'))){
-              doubleDown();
-              drawPHandsArr();
+              if(checkBalance(account.bet)){
+                doubleDown();
+                drawPHandsArr();
+              }
             }
             else if(isInside(mousePos,optionButtonsMap.get('Surrender'))){surrender(pHand);}
             else if(pHand.cards[0][0]==pHand.cards[1][0]&&isInside(mousePos,optionButtonsMap.get('Split'))){
-              split();
+              if(checkBalance(account.bet)){split();}
             }
           }
           displayPointer();
@@ -59,11 +59,12 @@ btnCanvas.addEventListener('click', function(evt){
         }else{
           //options for new hand
           if(isInside(mousePos,optionButtonsMap.get('Play'))&&account.bet>=minBet){
-            console.log('PlayGame');
-            playingGame = true;
-            newGame();
-            displayBetChips();//move later
-            displayBalance();
+              if(checkBalance(account.bet)){
+              console.log('PlayGame');
+              playingGame = true;
+              newGame();
+              displayBalance();
+            }
           }else if(rebet===false){
             if(isInside(mousePos,optionButtonsMap.get('Clear Bet'))){
               pHand.bet = account.bet=0;
@@ -72,21 +73,21 @@ btnCanvas.addEventListener('click', function(evt){
             //Changes bet based on chips selected
             chipBtnMap.forEach(chip=>{
               if(isInside(mousePos,chip)){
-                account.bet+=chip.v;
-                pHand.bet = account.bet;
+                let newBet = account.bet+chip.v;
+                if(checkBalance(newBet)==true){
+                  pHand.bet = account.bet = newBet;
+                }
               }
             })
-            displayBetChips();
           }else if(rebet===true){
             if(isInside(mousePos,optionButtonsMap.get('Clear Bet'))){
               rebet=false;
-              account.bet = 0;
-              pHand.bet = 0
+              pHand.bet = account.bet = 0;
               console.log('bet cleared');
-              drawPlayBetBtns();
-              displayBetChips();
             }
           }
+          displayBetChips();
+          drawButtons();
         }
       }
     }

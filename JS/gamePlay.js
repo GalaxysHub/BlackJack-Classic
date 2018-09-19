@@ -4,12 +4,9 @@ let pHandsArr = [];
 let curHand;
 let lastBet;
 let hasSplit = false;
-let surrendered = false;
 let rebet = true;
-// let playersTurn = false;
 let playingGame = true;
 let insuranceOpt = false;
-let insured = false;
 let checkingCard = false;
 
 function Hand(cards=[], val=0, nAces=0){
@@ -21,15 +18,12 @@ function Hand(cards=[], val=0, nAces=0){
 
 let pHand, dHand;
 function newGame(){
-  // playersTurn = true
   if(shoe.length<cutCard){createShoe();}
-  surrendered = false;
   account.balance-=account.bet;
   rebet = true;
   pHandsArr = [];
   pHand = new Hand();
   dHand = new Hand();
-  // lastBet = account.bet;
   ctx.clearRect(0,0,cWidth,cHeight);
   anictx.clearRect(0,0,cWidth,cHeight);
   bctx.clearRect(0,0,cWidth,cHeight);//clears chip stacks. animations should render obselete
@@ -46,10 +40,10 @@ function newGame(){
   playingGame = true;
   pHandsArr[0]=pHand;
 
-
-  createpHandsXLocs();// simplify
   drawDHandStart();
+  createpHandsXLocs();// required due to splitting
   drawPHandsArr();
+  displayBetChips();
   displayPValue();
 
   let exposedCardVal = dHand.cards[1][0];
@@ -61,11 +55,11 @@ function newGame(){
     checkDealerBlackJack();
   }else{
     playingGame = true;
+    checkBlackJack(pHand)
   }
-  checkBlackJack(pHand)
 }
 
-function checkBlackJack(hand){
+function checkBlackJack(hand){//players hand only
   if(hand.value===21&&hand.cards.length==2){
     hand.blackJack = true;
     console.log('BlackJack');
@@ -76,14 +70,15 @@ function checkBlackJack(hand){
     }else{
       drawPHandsArr();//need to write BlackJack to hand. Can't simplify well
     }
-    if(checkingCard===false){
-      stand();
-    }
+    stand();
   }
   drawButtons();
 }
 
 function checkDealerBlackJack(cb=()=>{}){
+  gctx.clearRect(0,0,cWidth,cHeight*0.4);
+  insuranceOpt = false;
+
   checkingCard = true;
   drawButtons();
   let xLocStart = cWidth/2-cardW/2,
@@ -110,10 +105,15 @@ function checkDealerBlackJack(cb=()=>{}){
             //Welcome to Callback Hell. It's not so bad here
             playingGame = false;
             checkingCard = false;
-            drawButtons();
+            if(pHand.value==21){
+              //replaces checkBlackJack function
+              strokeAndFillText(gctx,'BlackJack',cWidth/2,cHeight-cardH*0.7);
+              push(pHand);
+            }else{
+              dealerWins();
+            }
             cb();
-            // if(pHand.value==21){push(pHand);}
-            // else{dealerWins();}
+            drawButtons();
           });//end slide2
         })//end flip
       });//end slide1
@@ -121,34 +121,23 @@ function checkDealerBlackJack(cb=()=>{}){
       animations.slide(cardBack,xFin,yLocStart,xLocStart,yLocStart,cardW,cardH,20,20,ctx,()=>{
         ctx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);
         checkingCard = false;
+        checkBlackJack(pHand);
         drawButtons();
       })
     }
   });
-
 }
 
 function resolveInsurance(){
-  //dealer peak animation
-  console.log('resolving insurance');
-  insuranceOpt = false;
-  gctx.clearRect(0,cHeight*0.3,cWidth,cHeight*0.4);//Clears Insurance? display
-
-
-  checkDealerBlackJack(cb());
-  function cb(){
-    if(dHand.value==21){
-      if(insured==true){
-        //animation here
-        account.balance+=account.bet;
-        drawButtons();
-        displayBalance();
-      }
-      if(pHand.value==21){push(pHand);}
-      else{dealerWins();}
-      }
-    }
-
+  if(dHand.value==21){
+    console.log('insurance payout')
+    //animation here
+    account.balance+=account.bet;
+    drawButtons();
+    displayBalance();
+  }else{
+    //animation here
+  }
 }
 
 function split(){
@@ -195,19 +184,18 @@ function doubleDown(){
   displayBetChips();
 }
 
-function stand(){
+function stand(){//player only function
   //Loops through player's hands if split
   let nextHand = curHand+1;
   if(hasSplit&&(nextHand)<pHandsArr.length){
     curHand = nextHand;
     pHand = pHandsArr[curHand];
     checkBlackJack(pHand);
-    drawButtons();
   }else{
-    // playersTurn=false;
     if(checkingCard==false){
       dealerAction();
     }
+    drawButtons();
   }
 }
 
@@ -254,20 +242,22 @@ function findWinner(){
 
     if(hand.surrendered){
       console.log(surrendered);
+      dealerWins();
     }else if(hand.blackJack){
       playerBJ(hand);
     }else if(pValue>21){
       console.log('Player busts')
+      dealerWins();
     }else if(pValue>dValue&&pValue<22){
-      console.log('player wins');
       playerWins(hand);
     }else if(pValue<22&&dValue>21){
-      console.log('Dealer busts. Player wins');
+      console.log('Dealer busts.');
       playerWins(hand);
     }else if(pValue===dValue){
-      console.log('push');
       push(hand);
-    }else{console.log('dealer wins');dealerWins();}
+    }else{
+      dealerWins();
+    }
   })
   drawPlayBetBtns();
 }
