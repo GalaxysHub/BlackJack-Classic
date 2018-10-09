@@ -71,7 +71,7 @@ const promiseButtonsImgArr = asyncHelperFunctions.createPromImgArr(btnsPics, but
   promisechipBtnImgArr = asyncHelperFunctions.createPromImgArr(chipBtnsPics, chipBtnImgMap, chipsTopLoc);
 
 Promise.all(promiseButtonsImgArr.concat(promiseChipSideViewImgArr).concat(promisechipBtnImgArr))
-  .then(document.fonts.load("12px TheBlacklist"))
+  .then(document.fonts.load('12px TheBlacklist'))
   .then(document.fonts.load('12px Chela'))
   .then(()=>{
     BGBTNctx.drawImage(buttonsImgMap.get('ButtonBackground'),0,0,cWidth,btncHeight);//draws Background
@@ -111,12 +111,12 @@ function drawDHand(){
   }
 }
 
-function drawPHand(pHand,xLocStartP){
+function drawPHand(pHand,xLocStartP,cvs=ctx){
   let pCards = pHand.cards;
-  for(let j = 0; j<pCards.length; j++){
+  for(let j = 0, len = pCards.length; j<len; j++){
     let xLoc = xLocStartP + xCardDif*j;
     let yLoc = pHandYLocs - yCardDif*j;
-    ctx.drawImage(cardImgMap.get(pCards[j]), xLoc, yLoc,cardW, cardH);
+    cvs.drawImage(cardImgMap.get(pCards[j]), xLoc, yLoc,cardW, cardH);
   }
 }
 
@@ -146,14 +146,12 @@ function drawPHandsArr(){//Draws each of the players hands
     gctx.font = Math.floor(cHeight/6)+"px TheBlacklist";
 
   }
-
 }
 
 //buttons canvas functions
 const buttonsMap = new Map(),
   optionButtonsMap = new Map(),
   chipBtnMap = new Map();
-
 
 const btnSize = Math.floor(btncHeight*0.6),
   btnYPos = Math.floor((btncHeight-btnSize)/2),

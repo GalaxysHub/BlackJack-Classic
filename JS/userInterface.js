@@ -92,5 +92,4 @@ btnCanvas.addEventListener('click', function(evt){
       }
     }
 
-
 },false);

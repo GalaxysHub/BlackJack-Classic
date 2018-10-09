@@ -12,13 +12,13 @@ if(window.innerHeight>cHeight*1.2){
   yTop = Math.floor((window.innerHeight-cHeight*1.2)/2);
 }
 
-const BGCanvas = document.getElementById('BGCanvas');
-const mainCanvas = document.getElementById('mainCanvas');
-const aniCanvas = document.getElementById('aniCanvas');
-const displayCanvas = document.getElementById('displayCanvas');
-const slideCanvas = document.getElementById('slideCanvas');
-const glassCanavs = document.getElementById('glassCanvas');
-const betChipsCanvas = document.getElementById('betChipsCanvas');
+const BGCanvas = document.getElementById('BGCanvas'),
+  mainCanvas = document.getElementById('mainCanvas'),
+  aniCanvas = document.getElementById('aniCanvas'),
+  displayCanvas = document.getElementById('displayCanvas'),
+  slideCanvas = document.getElementById('slideCanvas'),
+  glassCanavs = document.getElementById('glassCanvas'),
+  betChipsCanvas = document.getElementById('betChipsCanvas');
 
 const canvasArr = [BGCanvas, mainCanvas, aniCanvas, displayCanvas, slideCanvas, glassCanvas,betChipsCanvas];
 canvasArr.forEach(cnv=>{
@@ -89,18 +89,17 @@ const cardW = Math.floor(cWidth/10),
   cardH = Math.floor(cardW*1.5);
 
 
-const pHandXLocs = [cWidth/2],//used for splitting
+const pHandXLocs = [],//used for splitting
   pHandYLocs = cHeight*0.95-cardH;
 
 // const setUp = (function(){
   const cardPicLoc = "./Images/Cards/";
   const picLoc = "./Images/Misc/";
-  const cardImgMap = new Map();
-  const miscImgMap = new Map();
+  const cardImgMap = new Map(),
+    miscImgMap = new Map();
   const pics = ['GreenFelt.jpg','DownArrowPointer.png','WhiteRabbitBack.png'];
   const btnPics = [];
   const cardSuits = ['C','S','D','H'];
-  const faceCards = ['A'];
   const numDecks = 6;
 
   //adds all of the cards for a single deck of cards
@@ -109,9 +108,7 @@ const pHandXLocs = [cWidth/2],//used for splitting
     for(let i = 10; i<=13; i++){
       deckCards.push(i+suit);
     }
-    faceCards.forEach(c=>{
-      deckCards.push(c+suit);
-    })
+    // deckCards.push('A'+suit);
   });
 
   const deckPics = [];//names of card pics
@@ -119,7 +116,6 @@ const pHandXLocs = [cWidth/2],//used for splitting
 
   const promiseCardImgArr = asyncHelperFunctions.createPromImgArr(deckPics, cardImgMap, cardPicLoc);
   const promiseMiscPicArr = asyncHelperFunctions.createPromImgArr(pics, miscImgMap, picLoc);
-
 
   Promise.all(promiseCardImgArr.concat(promiseMiscPicArr))
   .then((document.fonts.load("12px TheBlacklist")))
@@ -129,7 +125,6 @@ const pHandXLocs = [cWidth/2],//used for splitting
     drawBG();
     newGame();
   });
-
 
   function drawBG(){
     BGctx.drawImage(miscImgMap.get('GreenFelt'),0,0,cWidth,cHeight);

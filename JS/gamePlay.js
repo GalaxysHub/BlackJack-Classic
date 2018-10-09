@@ -141,23 +141,92 @@ function resolveInsurance(){
 }
 
 function split(){
+  const rate = 30;
   let newBalance = account.balance-account.bet;
+
   if(pHandsArr.length<splitUpTo&&newBalance>=0){
-    let currentHand = pHandsArr[curHand];
+    let oripHandsXLocs = pHandXLocs.slice(0,pHandXLocs.length);
     hasSplit = true;
     account.balance = newBalance;
+    //animations
+    console.log(oripHandsXLocs);
+    let currentHand = pHandsArr[curHand];
     let splitHand = new Hand(currentHand.cards.splice(1,1));//splits hand
-    hit(currentHand)//draws on first hand
-    hit(splitHand);//draws on second hand
-    pHandsArr.push(splitHand);
+    pHandsArr.splice(curHand+1,0,splitHand);
+
     createpHandsXLocs();
+    //adds canvas for each hand animation
+    for(let handNum=0, j=oripHandsXLocs.length; handNum<j;handNum++){
+      let cnv = document.createElement('canvas');
+      cnv.id = 'canvas'+handNum;
+      cnv.style.zIndex = 10+handNum;
+      document.body.appendChild(cnv)
+      cnv.style.position = 'absolute';
+      cnv.style.marginTop = yTop+'px';
+      cnv.style.left = xMargin+'px';
+      cnv.width = cWidth;
+      cnv.height = cHeight;
+
+      let splitctx = cnv.getContext('2d');
+
+      if(handNum==curHand){
+        let oriXPos = oripHandsXLocs[curHand]-cardW/2;
+        let splitCardImg1 = cardImgMap.get(currentHand.cards[0]);
+        let splitCardImg2 = cardImgMap.get(splitHand.cards[0]);
+        let xLoc1 = pHandXLocs[curHand+1]-cardW/2;
+        let xLoc2 = pHandXLocs[curHand]-cardW/2;
+        animations.slide(splitCardImg2,oriXPos+xCardDif,pHandYLocs-yCardDif,xLoc1,pHandYLocs,cardW,cardH,rate,0,splitctx,()=>{
+          splitctx.clearRect(0,0,cWidth,cHeight);
+          ctx.drawImage(splitCardImg2,xLoc1,pHandYLocs,cardW,cardH);
+          hit(splitHand);//draws on second hand
+          drawPHand(splitHand,xLoc1);
+        });
+        animations.slide(splitCardImg1,oriXPos,pHandYLocs,xLoc2,pHandYLocs,cardW,cardH,rate,0,splitctx,()=>{
+          splitctx.clearRect(0,0,cWidth,cHeight);
+          ctx.drawImage(splitCardImg1,xLoc2,pHandYLocs,cardW,cardH);
+          hit(currentHand);
+          drawPHand(currentHand,xLoc2);
+          checkBlackJack(currentHand);
+        });
+      }else{
+        let n;
+        if(handNum<curHand){n=handNum;}
+        else{n=handNum+1;}
+
+        splitctx.strokeRect(0,0,cWidth,cHeight);
+        let thisHand = pHandsArr[n];
+        console.log(thisHand);
+        let oriXPos = oripHandsXLocs[handNum]-cardW/2
+        let xPos = pHandXLocs[n]-cardW/2;
+        let xDif = xPos-oriXPos;
+        console.log(xDif);
+
+        animations.slideCanvas(splitctx,0,0,xDif,0,rate,0,()=>{
+          splitctx.clearRect(0,0,cWidth,cHeight);
+          drawPHand(thisHand,oriXPos,splitctx);
+        },()=>{
+          splitctx.clearRect(0,0,cWidth,cHeight);
+          drawPHand(thisHand,xPos);
+        });
+      }
+    }
+    console.log(pHandXLocs);
+
     ctx.clearRect(0,cHeight/2,cWidth,cHeight/2);//clear card images
     bctx.clearRect(0,0,cWidth,cHeight);//clears chips stacks
-    checkBlackJack(currentHand);
-    drawPHandsArr();
     displayBetChips();
     displayBalance();
+
   }else{console.log("can't split")}
+
+  function removeCanvases(){
+    for(let i=0, j=oripHandsXLocs.length; i<j;i++){
+      let id = 'canvas'+i;
+      let canvas = document.getElementById(id);
+      canvas.remove();
+    }
+  }
+
 }
 
 function createpHandsXLocs(){

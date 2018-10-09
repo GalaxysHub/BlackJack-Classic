@@ -40,9 +40,9 @@ const animations = (()=>{
   }
 
   let firstTime = true;
-  function slideCanvas(ctx=ctx, cnv=canvas, xStart,yStart,xFin,yFin,n,s,fn=()=>{},callback=()=>{}){
+  function slideCanvas(ctx=ctx,xStart,yStart,xFin,yFin,n,s,fn=()=>{},callback=()=>{}){
     if(s>0){
-      requestAnimationFrame(()=>{slideCanvas(ctx, cnv, xStart,yStart,xFin,yFin,n,s-1,fn,callback)});
+      requestAnimationFrame(()=>{slideCanvas(ctx,xStart,yStart,xFin,yFin,n,s-1,fn,callback)});
     }else{
       if(n>0){
         if(firstTime){
@@ -55,7 +55,7 @@ const animations = (()=>{
           y = yStart+dy;
         ctx.translate(dx,dy);
         fn();
-        requestAnimationFrame(()=>{slideCanvas(ctx,cnv,x,y,xFin,yFin,n-1,s,fn,callback)});
+        requestAnimationFrame(()=>{slideCanvas(ctx,x,y,xFin,yFin,n-1,s,fn,callback)});
       }else{callback();firstTime=true;}
     }
   }
