@@ -30,10 +30,11 @@ canvasArr.forEach(cnv=>{
 })
 
 BGCanvas.style.zIndex = -1;
-aniCanvas.style.zIndex = 5;
+aniCanvas.style.zIndex = 25;
 displayCanvas.style.zIndex = 10;
 glassCanvas.style.zIndex = 10;
 betChipsCanvas.style.zIndex = 8;
+slideCanvas.style.zIndex = 10;
 
 const anictx = aniCanvas.getContext('2d'),
   ctx = mainCanvas.getContext('2d'),
@@ -51,6 +52,8 @@ ctxArr.forEach(ctx=>{
 })
 
 const stdFontSize = Math.floor(cHeight/20);
+
+
 function setCtxProps(){
   let gFontSize = Math.floor(cHeight/6);
   gctx.font = gFontSize+'px TheBlacklist';
@@ -64,15 +67,15 @@ function setCtxProps(){
 
   bctx.strokeStyle = 'black';
   bctx.fillStyle = 'white';
+  // anictx.fillStyle = 'white';
   bctx.font=stdFontSize+'px Chela';
-
+  anictx.font = bctx.font;
   disctx.fillStyle  = 'white';
   disctx.font = stdFontSize+'px Chela';
 }
 
 const account = {
   balance: 10000,
-  lastBet: 0,
   bet: 100
 }
 const minBet = 100,
@@ -87,7 +90,6 @@ const pHandXDif = Math.floor(cWidth/(splitUpTo+1)),
 
 const cardW = Math.floor(cWidth/10),
   cardH = Math.floor(cardW*1.5);
-
 
 const pHandXLocs = [],//used for splitting
   pHandYLocs = cHeight*0.95-cardH;
@@ -118,7 +120,7 @@ const pHandXLocs = [],//used for splitting
   const promiseMiscPicArr = asyncHelperFunctions.createPromImgArr(pics, miscImgMap, picLoc);
 
   Promise.all(promiseCardImgArr.concat(promiseMiscPicArr))
-  .then((document.fonts.load("12px TheBlacklist")))
+  .then((document.fonts.load('12px TheBlacklist')))
   .then((document.fonts.load('12px Chela')))
   .then(()=>{
     setCtxProps();
@@ -151,3 +153,24 @@ const pHandXLocs = [],//used for splitting
   //
   // }
 // })()
+
+
+function setDefCanvasProps(cnvID,num){
+  let cnv = document.getElementById(cnvID);
+  document.body.appendChild(cnv);
+  cnv.style.zIndex = 10+num;
+  cnv.style.position = 'absolute';
+  cnv.style.marginTop = yTop+'px';
+  cnv.style.left = xMargin+'px';
+  cnv.width = cWidth;
+  cnv.height = cHeight;
+}
+
+function removeCanvases(num){
+  for(let i=0; i<num;i++){
+    console.log('i',i);
+    let id = 'canvas'+i;
+    let canvas = document.getElementById(id);
+    canvas.remove();
+  }
+}

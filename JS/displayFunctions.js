@@ -92,13 +92,14 @@ const xCardDif = Math.floor(cardW/7),
   dHandxLocStart = cWidth/2-cardW/2,
   dHandyLocStart = cHeight*0.05;
 
-function drawDHandStart(){
-  const dHandxLocStart = cWidth/2-cardW/2,
-    dHandyLocStart = cHeight*0.05;
-  let exposedCard = dHand.cards[1];
-  ctx.drawImage(miscImgMap.get('WhiteRabbitBack'),dHandxLocStart,dHandyLocStart,cardW,cardH);
-  ctx.drawImage(cardImgMap.get(exposedCard),dHandxLocStart-xCardDif,dHandyLocStart+yCardDif,cardW,cardH);
-}
+// function drawDHandStart(){
+//   const dHandxLocStart = cWidth/2-cardW/2,
+//     dHandyLocStart = cHeight*0.05;
+//   let exposedCard = dHand.cards[1];
+//
+//   ctx.drawImage(miscImgMap.get('WhiteRabbitBack'),dHandxLocStart,dHandyLocStart,cardW,cardH);
+//   ctx.drawImage(cardImgMap.get(exposedCard),dHandxLocStart-xCardDif,dHandyLocStart+yCardDif,cardW,cardH);
+// }
 
 function drawDHand(){
   ctx.clearRect(0,dHandyLocStart-1,cWidth,cardH+yCardDif+2);//clears facedown card edge cases
@@ -121,16 +122,16 @@ function drawPHand(pHand,xLocStartP,cvs=ctx){
 }
 
 function drawPHandsArr(){//Draws each of the players hands
-  let len = pHandsArr.length;
+  let numHands = pHandsArr.length;
 
-  if(len==1){
+  if(numHands==1){
     drawPHand(pHand,pHandXLocs[0]-cardW/2);
   //draws each of players hands
   }else{//true if player has split
     gctx.clearRect(0,cHeight/2,cWidth,cHeight/2); //in case of previous blackjack
     gctx.font = Math.floor(cHeight/15)+"px TheBlacklist";
 
-    for(let i = 0; i<len; i++){
+    for(let i = 0; i<numHands; i++){
       let pHand = pHandsArr[i],
         xLocStartP = pHandXLocs[i]-cardW/2;
 
@@ -233,30 +234,36 @@ function drawButtons(){
   }else{drawPlayBetBtns();}
 }
 
+const chipW = Math.floor(cardW*0.7),
+  chipH = Math.floor(chipW*0.7),
+  chipYLoc = pHandYLocs-chipW,
+  chipYDif = Math.floor(chipH/4);
 function displayBetChips(){
-  const chipW = Math.floor(cardW*0.7),
-    chipH = Math.floor(chipW*0.7),
-    chipYLoc = pHandYLocs-chipW,
-    chipYDif = Math.floor(chipH/4);
-
   for(let h = 0, numHands=pHandsArr.length; h<numHands; h++){
-    let chipXLoc = pHandXLocs[h]-cardW;
+    drawChips(h);
+  }
+}
 
-    let pHand = pHandsArr[h];
+function drawChips(h,bet=null,loc=null,cvs=bctx,disVal=true){
+  let chipXLoc;
+  if(!loc){chipXLoc = pHandXLocs[h]-cardW;}
+  else{chipXLoc=loc;}
+  let pHand = pHandsArr[h];
 
-    let numChips = calcMinChips(pHand.bet);
-    let chips = Object.keys(chipValues);
-    let betXLoc = chipXLoc+chipW/2,
-      betYLoc = chipYLoc+chipH,
-      dif = 0;
-    bctx.clearRect(betXLoc-chipW/2,0,chipW,cHeight);//clear last stack
-    strokeAndFillText(bctx,pHand.bet,betXLoc,betYLoc+chipYDif);//writes chip stack value
-    //draws stack of chips
-    for(let i = 0, len = chips.length; i<len; i++){
-      for(let j = 0; j<numChips[i]; j++){
-        bctx.drawImage(chipImgMap.get(chips[i]),chipXLoc,chipYLoc-dif*chipYDif,chipW,chipH);
-        dif +=1;
-      }
+  if(bet==null){bet = pHand.bet;}
+
+  let numChips = calcMinChips(bet);
+  let chips = Object.keys(chipValues);
+  let betXLoc = chipXLoc+chipW/2,
+    betYLoc = chipYLoc+chipH,
+    dif = 0;
+  cvs.clearRect(betXLoc-chipW/2,0,chipW,cHeight);//clear last stack
+  if(disVal){strokeAndFillText(cvs,bet,betXLoc,betYLoc+chipYDif);}//writes chip stack value if true
+  //draws stack of chips
+  for(let i = 0, len = chips.length; i<len; i++){
+    for(let j = 0; j<numChips[i]; j++){
+      cvs.drawImage(chipImgMap.get(chips[i]),chipXLoc,chipYLoc-dif*chipYDif,chipW,chipH);
+      dif +=1;
     }
   }
 }
@@ -293,11 +300,11 @@ const pointer = {
   h: cHeight/20,
   y: cHeight-cardH*1.8,
 }
-function displayPointer(){
+function displayPointer(cvs=disctx){
   let p = pointer;
   p.x = pHandXLocs[curHand]-p.w/2;
-  disctx.clearRect(0,p.y,cWidth,p.h);
-  disctx.drawImage(miscImgMap.get('DownArrowPointer'),p.x,p.y,p.w,p.h);
+  cvs.clearRect(0,p.y,cWidth,p.h);
+  cvs.drawImage(miscImgMap.get('DownArrowPointer'),p.x,p.y,p.w,p.h);
 }
 
 function checkBalance(amt){

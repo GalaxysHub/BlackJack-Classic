@@ -18,9 +18,7 @@ btnCanvas.addEventListener('click', function(evt){
       if(isInside(mousePos,optionButtonsMap.get('Yes'))){
         console.log('yes clicked');
         if(checkBalance(account.bet/2)){
-          //animation here
-          account.balance-=account.bet/2;
-          checkDealerBlackJack(resolveInsurance());
+          insurance();
         }
       }else if(isInside(mousePos,optionButtonsMap.get('No'))){
         console.log('no clicked');
@@ -32,10 +30,9 @@ btnCanvas.addEventListener('click', function(evt){
       if(checkingCard==false){
         if(playingGame===true){
           if(isInside(mousePos,optionButtonsMap.get('Hit'))){
-            hit(pHand);
-            drawPHandsArr();
-            drawButtons();
-            console.log(pHand.value);
+            hit(pHand,0,curHand,true,()=>{
+              drawButtons();
+            });
             let totHands = pHandsArr.length;
             if(pHand.value>20){
               stand();
@@ -46,16 +43,17 @@ btnCanvas.addEventListener('click', function(evt){
             if(isInside(mousePos,optionButtonsMap.get('Double'))){
               if(checkBalance(account.bet)){
                 doubleDown();
-                drawPHandsArr();
               }
             }
             else if(isInside(mousePos,optionButtonsMap.get('Surrender'))){surrender(pHand);}
             else if(pHand.cards[0][0]==pHand.cards[1][0]&&isInside(mousePos,optionButtonsMap.get('Split'))){
-              if(checkBalance(account.bet)){split();}
+              if(checkBalance(account.bet)){
+                split();
+                disctx.clearRect(0,0,cWidth,cHeight)
+              }
             }
           }
-          displayPointer();
-          displayPValue();
+          if(!isInside(mousePos,optionButtonsMap.get('Split'))){displayPointer();}
         }else{
           //options for new hand
           if(isInside(mousePos,optionButtonsMap.get('Play'))&&account.bet>=minBet){
@@ -87,7 +85,7 @@ btnCanvas.addEventListener('click', function(evt){
             }
           }
           displayBetChips();
-          drawButtons();
+          // drawButtons();
         }
       }
     }

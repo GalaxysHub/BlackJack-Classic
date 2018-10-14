@@ -18,6 +18,8 @@ function Hand(cards=[], val=0, nAces=0){
 
 let pHand, dHand;
 function newGame(){
+  let wait = 20;
+
   if(shoe.length<cutCard){createShoe();}
   account.balance-=account.bet;
   rebet = true;
@@ -26,37 +28,40 @@ function newGame(){
   dHand = new Hand();
   ctx.clearRect(0,0,cWidth,cHeight);
   anictx.clearRect(0,0,cWidth,cHeight);
-  bctx.clearRect(0,0,cWidth,cHeight);//clears chip stacks. animations should render obselete
+  bctx.clearRect(0,0,cWidth,cHeight);//clears chip stacks. aniLib should render obselete
   disctx.clearRect(0,0,cWidth,cHeight);
   gctx.clearRect(0,0,cWidth,cHeight);
 
   curHand = 0;
   hasSplit = false;
-  for(let i = 0; i<2; i++){
-    //Add animations here
-    hit(pHand);
-    hit(dHand);
-  }
+
   playingGame = true;
-  pHandsArr[0]=pHand;
+  pHandsArr[0] = pHand;
 
-  drawDHandStart();
+  // drawDHandStart();
   createpHandsXLocs();// required due to splitting
-  drawPHandsArr();
-  displayBetChips();
-  displayPValue();
 
-  let exposedCardVal = dHand.cards[1][0];
-  if(exposedCardVal=='A'){
-    insuranceOpt = true;
-    checkingCard = true;
-    drawButtons();
-  }else if(exposedCardVal=='1'){
-    checkDealerBlackJack();
-  }else{
-    playingGame = true;
-    checkBlackJack(pHand)
-  }
+  hit(dHand,0,null,false);
+  hit(pHand,wait);
+  hit(dHand,2*wait);
+  hit(pHand,3*wait,curHand,true,()=>{
+    displayPValue();
+    displayBetChips();
+
+    let exposedCardVal = dHand.cards[1][0];
+    if(exposedCardVal=='A'){
+      insuranceOpt = true;
+      checkingCard = true;
+      drawButtons();
+    }else if(exposedCardVal=='1'){
+      checkDealerBlackJack();
+    }else{
+      playingGame = true;
+      checkBlackJack(pHand)
+    }
+
+  });
+
 }
 
 function checkBlackJack(hand){//players hand only
@@ -91,16 +96,16 @@ function checkDealerBlackJack(cb=()=>{}){
   let exposedCard = cardImgMap.get(dHand.cards[1]);
 
   anictx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);// have to redraw image because of animation edge cases
-  animations.slide(cardBack,xLocStart,yLocStart,xFin,yLocStart,cardW,cardH,20,0,ctx,()=>{
+  aniLib.slide(cardBack,xLocStart,yLocStart,xFin,yLocStart,cardW,cardH,20,0,ctx,()=>{
     if(dHand.value==21){
       let n = 15
       let inc = (2*cardW)/n;
-      animations.slide(cardBack,xFin,yLocStart,xFin2,yLocStart,cardW,cardH,10,20,ctx,()=>{
-        animations.flip(cardBack,holeCard,xFin2+cardW/2,yLocStart,cardW,cardH,n,20,inc,ctx,()=>{
+      aniLib.slide(cardBack,xFin,yLocStart,xFin2,yLocStart,cardW,cardH,10,20,ctx,()=>{
+        aniLib.flip(cardBack,holeCard,xFin2+cardW/2,yLocStart,cardW,cardH,n,20,inc,ctx,()=>{
           ctx.clearRect(xFin2,yLocStart,cardW,cardH);//clears last flipped image
           // anictx.clearRect(xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);// have to redraw image because of ani
           ctx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);// have to redraw image because of animation edge cases
-          animations.slide(holeCard,xFin2,yLocStart,xLocStart,yLocStart,cardW,cardH,30,0,anictx,()=>{
+          aniLib.slide(holeCard,xFin2,yLocStart,xLocStart,yLocStart,cardW,cardH,30,0,anictx,()=>{
             strokeAndFillText(gctx,'BlackJack!',cWidth/2,yLocStart+cardH/2,cWidth);
             //Welcome to Callback Hell. It's not so bad here
             playingGame = false;
@@ -118,7 +123,7 @@ function checkDealerBlackJack(cb=()=>{}){
         })//end flip
       });//end slide1
     }else{
-      animations.slide(cardBack,xFin,yLocStart,xLocStart,yLocStart,cardW,cardH,20,20,ctx,()=>{
+      aniLib.slide(cardBack,xFin,yLocStart,xLocStart,yLocStart,cardW,cardH,20,20,ctx,()=>{
         ctx.drawImage(exposedCard,xLocStart-xCardDif,yLocStart+yCardDif,cardW,cardH);
         checkingCard = false;
         checkBlackJack(pHand);
@@ -132,6 +137,7 @@ function resolveInsurance(){
   if(dHand.value==21){
     console.log('insurance payout')
     //animation here
+    
     account.balance+=account.bet;
     drawButtons();
     displayBalance();
@@ -140,131 +146,12 @@ function resolveInsurance(){
   }
 }
 
-function split(){
-  const rate = 30;
-  let newBalance = account.balance-account.bet;
-
-  if(pHandsArr.length<splitUpTo&&newBalance>=0){
-    let oripHandsXLocs = pHandXLocs.slice(0,pHandXLocs.length);
-    hasSplit = true;
-    account.balance = newBalance;
-    //animations
-    console.log(oripHandsXLocs);
-    let currentHand = pHandsArr[curHand];
-    let splitHand = new Hand(currentHand.cards.splice(1,1));//splits hand
-    pHandsArr.splice(curHand+1,0,splitHand);
-
-    createpHandsXLocs();
-    //adds canvas for each hand animation
-    for(let handNum=0, j=oripHandsXLocs.length; handNum<j;handNum++){
-      let cnv = document.createElement('canvas');
-      cnv.id = 'canvas'+handNum;
-      cnv.style.zIndex = 10+handNum;
-      document.body.appendChild(cnv)
-      cnv.style.position = 'absolute';
-      cnv.style.marginTop = yTop+'px';
-      cnv.style.left = xMargin+'px';
-      cnv.width = cWidth;
-      cnv.height = cHeight;
-
-      let splitctx = cnv.getContext('2d');
-
-      if(handNum==curHand){
-        let oriXPos = oripHandsXLocs[curHand]-cardW/2;
-        let splitCardImg1 = cardImgMap.get(currentHand.cards[0]);
-        let splitCardImg2 = cardImgMap.get(splitHand.cards[0]);
-        let xLoc1 = pHandXLocs[curHand+1]-cardW/2;
-        let xLoc2 = pHandXLocs[curHand]-cardW/2;
-        animations.slide(splitCardImg2,oriXPos+xCardDif,pHandYLocs-yCardDif,xLoc1,pHandYLocs,cardW,cardH,rate,0,splitctx,()=>{
-          splitctx.clearRect(0,0,cWidth,cHeight);
-          ctx.drawImage(splitCardImg2,xLoc1,pHandYLocs,cardW,cardH);
-          hit(splitHand);//draws on second hand
-          drawPHand(splitHand,xLoc1);
-        });
-        animations.slide(splitCardImg1,oriXPos,pHandYLocs,xLoc2,pHandYLocs,cardW,cardH,rate,0,splitctx,()=>{
-          splitctx.clearRect(0,0,cWidth,cHeight);
-          ctx.drawImage(splitCardImg1,xLoc2,pHandYLocs,cardW,cardH);
-          hit(currentHand);
-          drawPHand(currentHand,xLoc2);
-          checkBlackJack(currentHand);
-        });
-      }else{
-        let n;
-        if(handNum<curHand){n=handNum;}
-        else{n=handNum+1;}
-
-        splitctx.strokeRect(0,0,cWidth,cHeight);
-        let thisHand = pHandsArr[n];
-        console.log(thisHand);
-        let oriXPos = oripHandsXLocs[handNum]-cardW/2
-        let xPos = pHandXLocs[n]-cardW/2;
-        let xDif = xPos-oriXPos;
-        console.log(xDif);
-
-        animations.slideCanvas(splitctx,0,0,xDif,0,rate,0,()=>{
-          splitctx.clearRect(0,0,cWidth,cHeight);
-          drawPHand(thisHand,oriXPos,splitctx);
-        },()=>{
-          splitctx.clearRect(0,0,cWidth,cHeight);
-          drawPHand(thisHand,xPos);
-        });
-      }
-    }
-    console.log(pHandXLocs);
-
-    ctx.clearRect(0,cHeight/2,cWidth,cHeight/2);//clear card images
-    bctx.clearRect(0,0,cWidth,cHeight);//clears chips stacks
-    displayBetChips();
-    displayBalance();
-
-  }else{console.log("can't split")}
-
-  function removeCanvases(){
-    for(let i=0, j=oripHandsXLocs.length; i<j;i++){
-      let id = 'canvas'+i;
-      let canvas = document.getElementById(id);
-      canvas.remove();
-    }
-  }
-
-}
-
 function createpHandsXLocs(){
   let numHands = pHandsArr.length;
   let xDis = cWidth/(numHands+1);
   pHandXLocs.splice(0,pHandXLocs.length);
   for(let i = 1, j=numHands+1; i<j; i++){
     pHandXLocs.push(Math.floor(xDis*i));
-  }
-}
-
-function hit(hand){
-  hand.cards.push(draw());
-  calcHandValue(hand);
-}
-
-function doubleDown(){
-  console.log('double down');
-  account.balance-=account.bet;
-  pHand.bet = 2*account.bet;
-  pHand.double = true;
-  hit(pHand);
-  displayBalance();
-  displayBetChips();
-}
-
-function stand(){//player only function
-  //Loops through player's hands if split
-  let nextHand = curHand+1;
-  if(hasSplit&&(nextHand)<pHandsArr.length){
-    curHand = nextHand;
-    pHand = pHandsArr[curHand];
-    checkBlackJack(pHand);
-  }else{
-    if(checkingCard==false){
-      dealerAction();
-    }
-    drawButtons();
   }
 }
 
@@ -292,7 +179,7 @@ function calcHandValue(hand){
 }
 
 function dealerAction(){
-  //dealer hits on anything less than 17 and soft 17
+  //dealer hits on less than 17 and soft 17
   drawDHand();
   while(dHand.value<17||(dHand.value==17&&dHand.numAces>0)){
     hit(dHand);
@@ -329,4 +216,59 @@ function findWinner(){
     }
   })
   drawPlayBetBtns();
+}
+
+function discard(){
+  ctx.clearRect(0,0,cWidth,cHeight);//clears all drawn cards
+  let rate = 60;
+  let wait = Math.floor(rate/6);
+  let dCards = dHand.cards;
+  let lenDHand = dCards.length;
+
+  let xFin = -2*cardW, yFin = -2*cardH;
+
+  for(let i = 0; i<lenDHand; i++){
+    let dCard = cardImgMap.get(dCards[i]);
+    let xLoc = dHandxLocStart-i*xCardDif;
+    let yLoc = dHandyLocStart+i*yCardDif;
+
+    let cnv = document.createElement('canvas');
+    cnv.id = 'canvas'+i;
+    document.body.appendChild(cnv)
+    setDefCanvasProps(cnv.id,i);
+    let dctx = cnv.getContext('2d');
+
+    let d = lenDHand-i
+    dctx.drawImage(dCard,xLoc,yLoc,cardW,cardH); //redraws cards on new canvas
+    aniLib.slide(dCard,xLoc,yLoc,xFin,yFin,cardW,cardH,rate,d*wait,dctx,()=>{});
+  }
+
+  let n = lenDHand;
+  for(let i = 0, numHands = pHandsArr.length; i<numHands; i++){
+    let pCards = pHandsArr[i].cards;
+
+    for(let j = 0, numCards = pCards.length; j<numCards; j++){
+        let cnv = document.createElement('canvas');
+        console.log('n',n);
+        cnv.id = 'canvas'+n;
+        document.body.appendChild(cnv)
+        n++;
+        setDefCanvasProps(cnv.id,n);
+        let dctx = cnv.getContext('2d');
+
+        let pCard = cardImgMap.get(pCards[j]);
+        let xLoc = pHandXLocs[i]-cardW/2+j*xCardDif;
+        let yLoc = pHandYLocs-j*yCardDif;
+
+        let d = numCards-j+i;
+
+        dctx.drawImage(pCard,xLoc,yLoc,cardW,cardH);
+        aniLib.slide(pCard,xLoc,yLoc,xFin,yFin,cardW,cardH,rate,d*wait,dctx,()=>{
+          if(i==numHands-1&&j==numCards-1){
+            console.log(n);
+            removeCanvases(n);
+          }
+        });
+    }
+  }
 }
