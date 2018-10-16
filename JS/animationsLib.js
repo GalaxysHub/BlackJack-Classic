@@ -86,11 +86,18 @@ const aniLib = (()=>{
     }
   }
 
+  function wait(n,cb=()=>{}){
+    if(n>0){
+      requestAnimationFrame(()=>{wait(n-1,cb)});
+    }else{cb();}
+  }
+
   return{
     slide:slide,
     flip: flip,
     slideCanvas: slideCanvas,
-    fadeOut:fadeOut
+    fadeOut:fadeOut,
+    wait:wait
   }
 
 })()

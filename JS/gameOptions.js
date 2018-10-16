@@ -1,4 +1,5 @@
-function hit(hand,wait=0,handNum=curHand,flip=true,cb=()=>{}){
+function hit(hand,wait=0,handNum=curHand,flip=true,cb=()=>{},cvs=anictx){
+  glassBtnCanvas.style.zIndex = 99;
   let rate = 30;
   let numCards = hand.cards.length
   let xLoc, yLoc;
@@ -18,11 +19,11 @@ function hit(hand,wait=0,handNum=curHand,flip=true,cb=()=>{}){
   }
 
   let inc = 2*cardW/rate;
-  aniLib.slide(cardBack,cWidth+cardW,-cardH,xLoc,yLoc,cardW,cardH,rate,wait,disctx,()=>
+  aniLib.slide(cardBack,cWidth+cardW,-cardH,xLoc,yLoc,cardW,cardH,rate,wait,cvs,()=>
   {
     if(flip){
-      aniLib.flip(cardBack,cardPic,xLoc+cardW/2,yLoc,cardW,cardH,rate,0,inc,disctx,()=>{
-        disctx.clearRect(0,0,cWidth,cHeight);
+      aniLib.flip(cardBack,cardPic,xLoc+cardW/2,yLoc,cardW,cardH,rate,0,inc,cvs,()=>{
+        cvs.clearRect(0,0,cWidth,cHeight);
         ctx.drawImage(cardPic,xLoc,yLoc,cardW,cardH);
         calcHandValue(hand);
         displayPointer();
@@ -37,25 +38,32 @@ function hit(hand,wait=0,handNum=curHand,flip=true,cb=()=>{}){
 }
 
 function doubleDown(){
+  glassBtnCanvas.style.zIndex = 99
   console.log('double down');
-  account.balance-=account.bet;
-  pHand.bet = 2*account.bet;
-  //animations here
   pHand.double = true;
-  hit(pHand,0,curHand,true,()=>{
-    displayPValue();
-  });
-  displayBetChips();
+  let amt = account.bet
+  account.balance-=amt;
+  pHand.bet = 2*amt;
   displayBalance();
+
+  //animations
+  let chipLoc = pHandXLocs[curHand]-cardW;
+  slideChipStack(0,anictx,chipLoc,-chipLoc,yLocPlayer,0,0,()=>{},()=>{
+    drawChips(0,2*amt,chipLoc);
+      hit(pHand,0,curHand,true,()=>{});
+  },amt);
+
 }
 
 function stand(){//player only function
+  glassBtnCanvas.style.zIndex = 99;
   //Loops through player's hands if split
   let nextHand = curHand+1;
   if(hasSplit&&(nextHand)<pHandsArr.length){
     curHand = nextHand;
     pHand = pHandsArr[curHand];
-    checkBlackJack(pHand);
+    if(pHand.blackJack===true){stand();}
+    else{glassBtnCanvas.style.zIndex = -1}
     displayPValue();
     displayPointer();
   }else{
@@ -67,18 +75,24 @@ function stand(){//player only function
 }
 
 function insurance(){
-  account.balance-=account.bet/2;
-  //animation here
-  let loc = pHandXLocs[0]-2*cardW;
-  slideChipStack(0,anictx,loc,cHeight/2,()=>{
-    checkDealerBlackJack(resolveInsurance());
-  },account.bet/2)
+  glassBtnCanvas.style.zIndex = 99
+  let amt = account.bet/2
+  account.balance-=amt;
+  //animations
+  let chipLoc = pHandXLocs[0]-2*cardW;
+  slideChipStack(0,anictx,chipLoc,-chipLoc,yLocPlayer,0,0,()=>{},()=>{
+    drawChips(0,amt,chipLoc);
+    checkDealerBlackJack(()=>{resolveInsurance()});
+  },amt);
+
 }
 
 function split(){
+  glassBtnCanvas.style.zIndex = 99;
+  disctx.clearRect(0,cHeight*0.9,cWidth,cHeight*0.1);//clears pValue
   gctx.clearRect(0,0,cWidth,cHeight);
 
-  const rate = 30;
+  const rate = globalRate;
   let newBalance = account.balance-account.bet;
 
   if(pHandsArr.length<splitUpTo&&newBalance>=0){
@@ -125,15 +139,18 @@ function split(){
           ctx.drawImage(splitCardImg2,xLoc2,pHandYLocs,cardW,cardH);
 
           removeCanvases(oripHandsXLocs.length);
-          displayPValue();
           drawPHandsArr();//draws final cards and conditions
           displayPointer();
 
-          slideChipStack(curHand+1,sctx,chipLoc2,cHeight/2,()=>{
+          slideChipStack(curHand+1,sctx,chipLoc2,-chipLoc2,cHeight/2,0,0,()=>{},()=>{
+            drawChips(handNum,account.bet,chipLoc2);
             hit(currentHand,0,curHand,true,()=>{
               checkBlackJack(currentHand);
             });
-            hit(splitHand,20,curHand+1);//hits on second hand
+            hit(splitHand,20,curHand+1,true,()=>{
+              glassBtnCanvas.style.zIndex = -1;
+              checkBlackJack(splitHand,false);
+            });//hits on second hand
           });
 
           anictx.clearRect(0,0,cWidth,cHeight);
@@ -164,4 +181,15 @@ function split(){
 
   }else{console.log("can't split")}
 
+}
+
+function rebetChip(cb=()=>{}){
+  let amt = account.bet;
+  account.balance-=amt;
+  //animations
+  let chipLoc = cWidth/2-cardW;
+  slideChipStack(0,anictx,chipLoc,-chipLoc,yLocPlayer,0,0,()=>{},()=>{
+    drawChips(0,amt,chipLoc);
+    cb();
+  },amt);
 }

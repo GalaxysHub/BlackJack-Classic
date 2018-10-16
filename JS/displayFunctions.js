@@ -10,7 +10,7 @@ const BTNctx = btnCanvas.getContext('2d');
 const BGBTNctx = btnBGCanvas.getContext('2d');
 const gBTNctx = btnBGCanvas.getContext('2d');
 
-const btnCanvasArr = [btnCanvas, btnBGCanvas];
+const btnCanvasArr = [btnCanvas, btnBGCanvas, glassBtnCanvas];
 btnCanvasArr.forEach(cnv=>{
   cnv.style.position = 'absolute';
   cnv.style.top = cHeight+yTop+'px';
@@ -19,6 +19,7 @@ btnCanvasArr.forEach(cnv=>{
   cnv.height = btncHeight;
 })
 btnBGCanvas.style.zIndex = -1;
+glassBtnCanvas.style.zIndex = -1;
 
 const btnCtxArr = [BTNctx, BGBTNctx, gBTNctx];
 btnCtxArr.forEach(ctx=>{
@@ -75,10 +76,10 @@ Promise.all(promiseButtonsImgArr.concat(promiseChipSideViewImgArr).concat(promis
   .then(document.fonts.load('12px Chela'))
   .then(()=>{
     BGBTNctx.drawImage(buttonsImgMap.get('ButtonBackground'),0,0,cWidth,btncHeight);//draws Background
+    displayBalance();
     setBtnCtxProps();
     drawChipButtons();
-    drawButtons();
-    displayBalance();
+    drawPlayBetBtns();
   });
 
 function strokeAndFillText(ctx,msg,x,y,maxW){
@@ -91,15 +92,6 @@ const xCardDif = Math.floor(cardW/7),
   yCardDif = Math.floor(cardH/7),
   dHandxLocStart = cWidth/2-cardW/2,
   dHandyLocStart = cHeight*0.05;
-
-// function drawDHandStart(){
-//   const dHandxLocStart = cWidth/2-cardW/2,
-//     dHandyLocStart = cHeight*0.05;
-//   let exposedCard = dHand.cards[1];
-//
-//   ctx.drawImage(miscImgMap.get('WhiteRabbitBack'),dHandxLocStart,dHandyLocStart,cardW,cardH);
-//   ctx.drawImage(cardImgMap.get(exposedCard),dHandxLocStart-xCardDif,dHandyLocStart+yCardDif,cardW,cardH);
-// }
 
 function drawDHand(){
   ctx.clearRect(0,dHandyLocStart-1,cWidth,cardH+yCardDif+2);//clears facedown card edge cases
@@ -171,7 +163,7 @@ const btnSize = Math.floor(btncHeight*0.6),
   optionButtonsMap.set("Yes",{img:'GreenCircle',x:cWidth/2, y:btnYPos, w:btnSize, h:btnSize});
   optionButtonsMap.set("No",{img:'RedCircle',x:cWidth/2-btnSize, y:btnYPos, w:btnSize, h:btnSize});
 
-  const chipsXPosStart = Math.floor(chipSize),
+  const chipsXPosStart = Math.floor(chipSize*1.5),
     chipsXDif = chipSize;
   const chipXPosArr = [];
   for(let i = 0; i<5; i++){
@@ -179,12 +171,11 @@ const btnSize = Math.floor(btncHeight*0.6),
     chipXPosArr.push(xPos);
   }
   let yPosChip = btncHeight/2-chipSize/2;
-
-  chipBtnMap.set('WhiteChip',{img:'WhiteChip1Top',x:chipXPosArr[0],y:yPosChip,h:chipSize,w:chipSize,v:chipValues.WhiteChip1Side});
-  chipBtnMap.set('RedChip',{img:'RedChip5Top',x:chipXPosArr[1],y:yPosChip,h:chipSize,w:chipSize,v:chipValues.RedChip5Side});
-  chipBtnMap.set('GreenChip',{img:'GreenChip25Top',x:chipXPosArr[2],y:yPosChip,h:chipSize,w:chipSize, v:chipValues.GreenChip25Side});
-  chipBtnMap.set('BlackChip',{img:'BlackChip100Top',x:chipXPosArr[3],y:yPosChip,h:chipSize,w:chipSize, v:chipValues.BlackChip100Side});
-  chipBtnMap.set('PurpleChip',{img:'PurpleChip500Top',x:chipXPosArr[4],y:yPosChip,h:chipSize,w:chipSize, v:chipValues.PurpleChip500Side});
+  chipBtnMap.set('WhiteChip',{img:'WhiteChip1Top',x:chipXPosArr[0],y:yPosChip,h:chipSize,w:chipSize,v:chipValues.WhiteChip1Side, s:"WhiteChip1Side"});
+  chipBtnMap.set('RedChip',{img:'RedChip5Top',x:chipXPosArr[1],y:yPosChip,h:chipSize,w:chipSize,v:chipValues.RedChip5Side, s:"RedChip5Side"});
+  chipBtnMap.set('GreenChip',{img:'GreenChip25Top',x:chipXPosArr[2],y:yPosChip,h:chipSize,w:chipSize, v:chipValues.GreenChip25Side, s:"GreenChip25Side"});
+  chipBtnMap.set('BlackChip',{img:'BlackChip100Top',x:chipXPosArr[3],y:yPosChip,h:chipSize,w:chipSize, v:chipValues.BlackChip100Side, s:"BlackChip100Side"});
+  chipBtnMap.set('PurpleChip',{img:'PurpleChip500Top',x:chipXPosArr[4],y:yPosChip,h:chipSize,w:chipSize, v:chipValues.PurpleChip500Side, s:"PurpleChip500Side"});
 })()
 
 function drawBtnImg(name, propMap=optionButtonsMap, imgMap=buttonsImgMap, ctx=BTNctx){
@@ -216,8 +207,7 @@ function drawButtons(){
   BTNctx.font = fontSize+'px Chela';
 
   if(insuranceOpt){
-    gctx.strokeText('Insurance?',cWidth/2,cHeight/4,cWidth*0.9);
-    gctx.fillText('Insurance?',cWidth/2,cHeight/4,cWidth*0.9);
+    strokeAndFillText(gctx,'Insurance?',cWidth/2,cHeight/2,cWidth*0.9);
     drawBtnImg('Yes'); drawBtnImg('No');
     writeBtnMsg('Yes'); writeBtnMsg('No');
   }else if(checkingCard){
@@ -244,7 +234,7 @@ function displayBetChips(){
   }
 }
 
-function drawChips(h,bet=null,loc=null,cvs=bctx,disVal=true){
+function drawChips(h=0,bet=null,loc=null,cvs=bctx,disVal=true){
   let chipXLoc;
   if(!loc){chipXLoc = pHandXLocs[h]-cardW;}
   else{chipXLoc=loc;}

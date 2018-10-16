@@ -32,8 +32,8 @@ canvasArr.forEach(cnv=>{
 BGCanvas.style.zIndex = -1;
 aniCanvas.style.zIndex = 25;
 displayCanvas.style.zIndex = 10;
-glassCanvas.style.zIndex = 10;
-betChipsCanvas.style.zIndex = 8;
+glassCanvas.style.zIndex = 99;
+betChipsCanvas.style.zIndex = 15;
 slideCanvas.style.zIndex = 10;
 
 const anictx = aniCanvas.getContext('2d'),
@@ -76,7 +76,7 @@ function setCtxProps(){
 
 const account = {
   balance: 10000,
-  bet: 100
+  bet: 0
 }
 const minBet = 100,
   maxBet = 1000;
@@ -94,66 +94,59 @@ const cardW = Math.floor(cWidth/10),
 const pHandXLocs = [],//used for splitting
   pHandYLocs = cHeight*0.95-cardH;
 
-// const setUp = (function(){
-  const cardPicLoc = "./Images/Cards/";
-  const picLoc = "./Images/Misc/";
-  const cardImgMap = new Map(),
-    miscImgMap = new Map();
-  const pics = ['GreenFelt.jpg','DownArrowPointer.png','WhiteRabbitBack.png'];
-  const btnPics = [];
-  const cardSuits = ['C','S','D','H'];
-  const numDecks = 6;
+const cardPicLoc = "./Images/Cards/";
+const picLoc = "./Images/Misc/";
+const cardImgMap = new Map(),
+  miscImgMap = new Map();
+const pics = ['GreenFelt.jpg','DownArrowPointer.png','WhiteRabbitBack.png'];
+const btnPics = [];
+const cardSuits = ['C','S','D','H'];
+const numDecks = 6;
 
-  //adds all of the cards for a single deck of cards
-  const deckCards = [];
-  cardSuits.forEach((suit)=>{
-    for(let i = 10; i<=13; i++){
-      deckCards.push(i+suit);
-    }
-    // deckCards.push('A'+suit);
-  });
-
-  const deckPics = [];//names of card pics
-  deckCards.forEach((card)=>{deckPics.push(card+'.png');})
-
-  const promiseCardImgArr = asyncHelperFunctions.createPromImgArr(deckPics, cardImgMap, cardPicLoc);
-  const promiseMiscPicArr = asyncHelperFunctions.createPromImgArr(pics, miscImgMap, picLoc);
-
-  Promise.all(promiseCardImgArr.concat(promiseMiscPicArr))
-  .then((document.fonts.load('12px TheBlacklist')))
-  .then((document.fonts.load('12px Chela')))
-  .then(()=>{
-    setCtxProps();
-    drawBG();
-    newGame();
-  });
-
-  function drawBG(){
-    BGctx.drawImage(miscImgMap.get('GreenFelt'),0,0,cWidth,cHeight);
-    BGctx.strokeRect(0,0,cWidth,cHeight);
+//adds all of the cards for a single deck of cards
+const deckCards = [];
+cardSuits.forEach((suit)=>{
+  for(let i = 2; i<=13; i++){
+    deckCards.push(i+suit);
   }
+  deckCards.push('A'+suit);
+});
 
-  let shoe;
-  function createShoe(){
-    shoe = [];
-    for(let i = 0; i<numDecks; i++){
-      shoe.push(...deckCards);
-    }
+const deckPics = [];//names of card pics
+deckCards.forEach((card)=>{deckPics.push(card+'.png');})
+
+const promiseCardImgArr = asyncHelperFunctions.createPromImgArr(deckPics, cardImgMap, cardPicLoc);
+const promiseMiscPicArr = asyncHelperFunctions.createPromImgArr(pics, miscImgMap, picLoc);
+
+Promise.all(promiseCardImgArr.concat(promiseMiscPicArr))
+.then((document.fonts.load('12px TheBlacklist')))
+.then((document.fonts.load('12px Chela')))
+.then(()=>{
+  setCtxProps();
+  drawBG();
+  pHand = new Hand();
+  pHandsArr[0] = pHand;
+  pHandXLocs[0]=cWidth/2
+});
+
+function drawBG(){
+  BGctx.drawImage(miscImgMap.get('GreenFelt'),0,0,cWidth,cHeight);
+  BGctx.strokeRect(0,0,cWidth,cHeight);
+}
+
+let shoe;
+function createShoe(){
+  shoe = [];
+  for(let i = 0; i<numDecks; i++){
+    shoe.push(...deckCards);
   }
-  createShoe();
+}
+createShoe();
 
-  function draw(){
-    let r = Math.floor(Math.random()*shoe.length)
-    return shoe.splice(r,1)[0];
-  }
-
-
-  // return{
-  //   cardImgMap:cardImgMap,
-  //
-  // }
-// })()
-
+function draw(){
+  let r = Math.floor(Math.random()*shoe.length)
+  return shoe.splice(r,1)[0];
+}
 
 function setDefCanvasProps(cnvID,num){
   let cnv = document.getElementById(cnvID);
