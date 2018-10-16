@@ -156,7 +156,7 @@ function findWinner(){
     document.body.appendChild(cnv);
     setDefCanvasProps(cnv.id,i);
 
-    let splitctx = cnv.getContext('2d');
+    let chipctx = cnv.getContext('2d');
 
     let hand = pHandsArr[i];
     let pValue = hand.value,
@@ -164,21 +164,21 @@ function findWinner(){
 
     if(hand.surrendered){
       console.log('surrendered');
-      dealerWins(i,splitctx);
+      dealerWins(i,chipctx);
     }else if(hand.blackJack){
-      playerBJ(i,splitctx);
+      playerBJ(i,chipctx);
     }else if(pValue>21){
       console.log('Player busts')
-      dealerWins(i,splitctx);
+      dealerWins(i,chipctx);
     }else if(pValue>dValue&&pValue<22){
-      playerWins(i,splitctx);
+      playerWins(i,chipctx);
     }else if(pValue<22&&dValue>21){
       console.log('Dealer busts.');
-      playerWins(i,splitctx);
+      playerWins(i,chipctx);
     }else if(pValue===dValue){
-      push(i,splitctx);
+      push(i,chipctx);
     }else{
-      dealerWins(i,splitctx);
+      dealerWins(i,chipctx);
     }
     //Need to remove canvases when done;
     if(i==(n-1)){
@@ -225,7 +225,6 @@ function discard(){
 
     for(let j = 0, numCards = pCards.length; j<numCards; j++){
         let cnv = document.createElement('canvas');
-        console.log('n',n);
         cnv.id = 'canvas'+n;
         document.body.appendChild(cnv)
         n++;
@@ -241,7 +240,6 @@ function discard(){
         dctx.drawImage(pCard,xLoc,yLoc,cardW,cardH);
         aniLib.slide(pCard,xLoc,yLoc,xFin,yFin,cardW,cardH,rate,d*wait,dctx,()=>{
           if(i==numHands-1&&j==numCards-1){
-            console.log(n);
             removeCanvases(n);
             glassBtnCanvas.style.zIndex = -1;
           }

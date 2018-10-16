@@ -161,7 +161,6 @@ function setDefCanvasProps(cnvID,num){
 
 function removeCanvases(num){
   for(let i=0; i<num;i++){
-    console.log('i',i);
     let id = 'canvas'+i;
     let canvas = document.getElementById(id);
     canvas.remove();

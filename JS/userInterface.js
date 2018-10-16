@@ -33,12 +33,10 @@ btnCanvas.addEventListener('click', function(evt){
           if(isInside(mousePos,optionButtonsMap.get('Hit'))){
             hit(pHand,0,curHand,true,()=>{
               if(pHand.value<21){glassBtnCanvas.style.zIndex = -1;}
+              else if(pHand.value>20){stand();}
               drawButtons();
             });
-            let totHands = pHandsArr.length;
-            if(pHand.value>20){
-              stand();
-            }
+            // let totHands = pHandsArr.length;
           }else if(isInside(mousePos,optionButtonsMap.get('Stand'))){
             stand();
           }else if(pHand.cards.length==2){

@@ -52,7 +52,6 @@ function doubleDown(){
     drawChips(0,2*amt,chipLoc);
       hit(pHand,0,curHand,true,()=>{});
   },amt);
-
 }
 
 function stand(){//player only function
@@ -100,7 +99,6 @@ function split(){
     hasSplit = true;
     account.balance = newBalance;
     //animations
-    console.log(oripHandsXLocs);
     let currentHand = pHandsArr[curHand];
     let splitHand = new Hand(currentHand.cards.splice(1,1));//splits hand
     pHandsArr.splice(curHand+1,0,splitHand);
@@ -129,7 +127,6 @@ function split(){
         let xDif = xLoc1-oriXPos;
         let chipLoc1 = oriXPos-cardW/2;
         let chipLoc2 = pHandXLocs[curHand+1]-cardW;
-        console.log('chipLoc',chipLoc2);
 
         //hand 1
         slideHandProps(handNum,splitctx,pHand,chipLoc1,xLoc1Fin,oriXPos,xLoc1,xDif);
@@ -163,7 +160,6 @@ function split(){
 
         splitctx.strokeRect(0,0,cWidth,cHeight);
         let thisHand = pHandsArr[n];
-        console.log(thisHand);
         let chipLoc = oripHandsXLocs[handNum]-cardW;
         let chipLocFin = pHandsArr[handNum]-cardW;
         let oriXPos = oripHandsXLocs[handNum]-cardW/2;
@@ -173,7 +169,6 @@ function split(){
         slideHandProps(n,splitctx,thisHand,chipLoc,chipLocFin,oriXPos,xPos,xDif);
       }
     }
-    console.log(pHandXLocs);
 
     ctx.clearRect(0,cHeight/2,cWidth,cHeight/2);//clear card images
     bctx.clearRect(0,0,cWidth,cHeight);//clears chips stacks

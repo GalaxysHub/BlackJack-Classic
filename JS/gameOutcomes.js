@@ -4,7 +4,6 @@ const xLocDealer = cWidth*0.75;
 const yLocDealer = cHeight*0.7;
 
 function bust(hand){
-  console.log('bust');
   hand.bust = true;
   if(hand==pHand){
     if(pHandsArr.length==1){
