@@ -20,7 +20,7 @@ function newGame(){
   let wait = 20;
 
   if(shoe.length<cutCard){createShoe();}
-  account.balance-=account.bet;
+  // account.balance-=account.bet;
   rebet = true;
   pHandsArr = [];
   pHand = new Hand();

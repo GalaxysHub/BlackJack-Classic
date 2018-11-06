@@ -60,7 +60,8 @@ btnCanvas.addEventListener('click', function(evt){
               glassBtnCanvas.style.zIndex = 99;
               playingGame = true;
               if(rebet===true){rebetChip(()=>{newGame();});}
-              else{newGame();}
+              else{newGame();
+              account.balance-=account.bet;}
               displayBalance();
             }
           }else if(rebet===false){
