@@ -1,6 +1,8 @@
 # BlackJack-Classic
 HTML5 BlackJack
 
+Written in pure Vanilla Javascript with no third-party libraries
+
 <img width="1124" alt="blackjack" src="https://user-images.githubusercontent.com/39435918/53032256-1eba9980-3434-11e9-9367-28f3679426f7.PNG">
 
 ## Download Instructions
@@ -17,11 +19,11 @@ https://wizardofodds.com/games/blackjack/basics/
 
 ## Unique Game Features
 
-### Insurance
+#### Insurance
 
 If the dealer shows an ace the player has the option to buy insurance. Insurance pays 2:1 if the dealer has a natural Blackjack
 
-### Dynamically split up to 5 times. 
+#### Dynamically Split Up to 5 Times
 
 If the player has 2 cards of the same value, he may split his hand into two separate hands.
 
@@ -33,4 +35,4 @@ Most online Blackjack games that allow splitting will hardcode the option to spl
 
 Stack for insurance is not removed if player loses. 
 
-Split button does not show if player hits blackjack on one hand and has the option to split on the second.
+Split option sometimes does not show after standing with multiple split hands.
