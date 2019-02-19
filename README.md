@@ -36,3 +36,16 @@ Most online Blackjack games that allow splitting will hardcode the option to spl
 
 Stack for insurance is not removed if player loses. 
 Split option sometimes does not show after standing with multiple split hands.
+
+
+## Third Party Contributions
+
+### Fonts
+https://www.fontsquirrel.com/fonts/list/find_fonts?q%5Bterm%5D=chela&q%5Bsearch_check%5D=Y
+
+### Images
+Chip images made with Paint 3D
+
+Bicycle Playing Cards
+
+Buttons created with https://dabuttonfactory.com/
