@@ -2,6 +2,7 @@
 HTML5 BlackJack
 
 Written in pure Vanilla Javascript with no third-party libraries
+Minimum working version. For personal use only.
 
 <img width="1124" alt="blackjack" src="https://user-images.githubusercontent.com/39435918/53032256-1eba9980-3434-11e9-9367-28f3679426f7.PNG">
 
@@ -9,7 +10,7 @@ Written in pure Vanilla Javascript with no third-party libraries
 
 Download and unzip the repo. 
 Open the file named index.html. 
-If images/fonts are missing, refresh the page.
+If images/fonts are missing, Refresh the page.
 
 ## Game Rules
 
@@ -34,5 +35,4 @@ Most online Blackjack games that allow splitting will hardcode the option to spl
 ## Known Bugs
 
 Stack for insurance is not removed if player loses. 
-
 Split option sometimes does not show after standing with multiple split hands.
