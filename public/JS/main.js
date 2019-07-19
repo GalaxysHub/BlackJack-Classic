@@ -1,16 +1,11 @@
 "use strict";
 
-const cHeight = Math.floor(window.innerHeight*0.8),
-  cWidth = Math.floor(cHeight*1.8);
+const cWidth = Math.floor(window.innerWidth*0.98),
+  cHeight = Math.floor(cWidth*0.55);
 
 let xMargin = 0;
 let yTop = 0;
-if(window.innerWidth>cWidth){
-  xMargin = Math.floor((window.innerWidth-cWidth)/2);
-}
-if(window.innerHeight>cHeight*1.2){
-  yTop = Math.floor((window.innerHeight-cHeight*1.2)/2);
-}
+if(window.innerWidth>cWidth){xMargin = Math.floor((window.innerWidth-cWidth)/2);}
 
 const BGCanvas = document.getElementById('BGCanvas'),
   mainCanvas = document.getElementById('mainCanvas'),
