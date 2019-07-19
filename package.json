@@ -1,0 +1,20 @@
+{
+  "name": "blackjack-classic",
+  "version": "1.0.0",
+  "description": "HTML5 BlackJack",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GalaxysHub/BlackJack-Classic.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GalaxysHub/BlackJack-Classic/issues"
+  },
+  "homepage": "https://github.com/GalaxysHub/BlackJack-Classic#readme"
+}
