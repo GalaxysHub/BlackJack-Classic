@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/GalaxysHub/BlackJack-Classic/issues"
   },
-  "homepage": "https://github.com/GalaxysHub/BlackJack-Classic#readme"
+  "homepage": "https://github.com/GalaxysHub/BlackJack-Classic#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
