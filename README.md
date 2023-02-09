@@ -5,7 +5,7 @@ HTML5 BlackJack
 Written in pure Vanilla Javascript with no third-party libraries
 Minimum working version. For personal use only.
 
-See deployed app here: https://blackjack-classic.herokuapp.com/index.html
+See deployed app here: https://black-jack-classic.vercel.app
 
 <img width="1124" alt="blackjack" src="https://user-images.githubusercontent.com/39435918/53032256-1eba9980-3434-11e9-9367-28f3679426f7.PNG">
 
