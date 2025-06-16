@@ -94,6 +94,7 @@ async function stand() {
       }
       displayPValue();
       displayPointer();
+      drawButtons();
     } else {
       if (checkingCard === false) {
         await dealerAction();

@@ -164,7 +164,9 @@ async function resolveInsurance() {
       drawButtons();
     } else {
       // Animations
-      await slideChipStack(0, sctx, chipLoc, 0, 0, xLocDealer - chipLoc, -yLocDealer, () => {}, amt / 2);
+      await slideChipStack(0, sctx, chipLoc, 0, 0, xLocDealer - chipLoc, -yLocDealer, () => {
+        bctx.clearRect(chipLoc, 0, chipW, cWidth);
+      }, amt / 2);
       
       glassBtnCanvas.style.zIndex = -1;
       sctx.translate(-chipLoc, yLocDealer);
