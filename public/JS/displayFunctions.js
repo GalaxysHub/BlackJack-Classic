@@ -71,16 +71,34 @@ const promiseButtonsImgArr = asyncHelperFunctions.createPromImgArr(btnsPics, but
   promiseChipSideViewImgArr = asyncHelperFunctions.createPromImgArr(chipPics, chipImgMap, chipsSideLoc),
   promisechipBtnImgArr = asyncHelperFunctions.createPromImgArr(chipBtnsPics, chipBtnImgMap, chipsTopLoc);
 
-Promise.all(promiseButtonsImgArr.concat(promiseChipSideViewImgArr).concat(promisechipBtnImgArr))
-  .then(document.fonts.load('12px TheBlacklist'))
-  .then(document.fonts.load('12px Chela'))
-  .then(()=>{
-    BGBTNctx.drawImage(buttonsImgMap.get('ButtonBackground'),0,0,cWidth,btncHeight);//draws Background
+// Modern async initialization for display functions
+async function initializeDisplayFunctions() {
+  try {
+    // Load all button and chip images
+    await Promise.all([
+      ...promiseButtonsImgArr,
+      ...promiseChipSideViewImgArr,
+      ...promisechipBtnImgArr
+    ]);
+    
+    // Load fonts
+    await asyncHelperFunctions.loadFonts(['12px TheBlacklist', '12px Chela']);
+    
+    // Initialize display
+    BGBTNctx.drawImage(buttonsImgMap.get('ButtonBackground'), 0, 0, cWidth, btncHeight);
     displayBalance();
     setBtnCtxProps();
     drawChipButtons();
     drawPlayBetBtns();
-  });
+    
+    console.log('Display functions initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize display functions:', error);
+  }
+}
+
+// Start initialization
+initializeDisplayFunctions();
 
 function strokeAndFillText(ctx,msg,x,y,maxW){
   ctx.strokeText(msg,x,y,maxW);

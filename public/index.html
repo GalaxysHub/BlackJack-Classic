@@ -2,9 +2,19 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <link rel= "stylesheet" type="text/css" href="CSS/Chela/chelafont.css">
-    <link rel= "stylesheet" type="text/css" href="CSS/TheBlacklist/font.css">
-    <title>BlackJack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="CSS/Chela/chelafont.css">
+    <link rel="stylesheet" type="text/css" href="CSS/TheBlacklist/font.css">
+    <title>BlackJack - Modern Edition</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #0a5d2c;
+        font-family: 'Chela', sans-serif;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <canvas id="mainCanvas"></canvas>
@@ -18,15 +28,16 @@
     <canvas id="btnCanvas"></canvas>
     <canvas id="btnBGCanvas"></canvas>
     <canvas id="glassBtnCanvas"></canvas>
-  </body>
 
-  <script src = "JS/asyncHelperFunctions.js"></script>
-  <script src = "JS/animationsLib.js"></script>
-  <script src = "JS/animations.js"></script>
-  <script src = "JS/main.js"></script>
-  <script src = "JS/gamePlay.js"></script>
-  <script src = "JS/gameOptions.js"></script>
-  <script src = "JS/gameOutcomes.js"></script>
-  <script src = "JS/displayFunctions.js"></script>
-  <script src = "JS/userInterface.js"></script>
+    <!-- Load scripts in dependency order -->
+    <script src="JS/asyncHelperFunctions.js"></script>
+    <script src="JS/animationsLib.js"></script>
+    <script src="JS/animations.js"></script>
+    <script src="JS/main.js"></script>
+    <script src="JS/gamePlay.js"></script>
+    <script src="JS/gameOptions.js"></script>
+    <script src="JS/gameOutcomes.js"></script>
+    <script src="JS/displayFunctions.js"></script>
+    <script src="JS/userInterface.js"></script>
+  </body>
 </html>
